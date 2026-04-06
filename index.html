@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelWave — Joue maintenant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <div class="logo">PIXEL<span style="color:#ff3cac;-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <nav>
+      <a href="#">Accueil</a>
+      <a href="#">Top Jeux</a>
+      <a href="#">Nouveautés</a>
+    </nav>
+    <div class="search-wrap">
+      <span class="icon">🔍</span>
+      <input id="searchInput" type="text" placeholder="Chercher un jeu…" />
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <h1>JOUE GRATUITEMENT<br>DIRECTEMENT DANS TON NAVIGATEUR</h1>
+    <p>Des jeux rétro &amp; modernes — sans téléchargement.</p>
+  </section>
+
+  <!-- ── Category chips ── -->
+  <div class="categories">
+    <button class="chip active" data-filter="all">🕹️ Tous</button>
+    <button class="chip" data-filter="arcade">🚀 Arcade</button>
+    <button class="chip" data-filter="quiz">🧠 Quiz</button>
+    <button class="chip" data-filter="puzzle">🧩 Puzzle</button>
+  </div>
+
+  <!-- ── Game section ── -->
+  <p class="section-title">JEUX POPULAIRES</p>
+  <div class="game-grid" id="gameGrid">
+    <!-- Cartes injectées par main.js -->
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p><span>PIXELWAVE</span> &nbsp;•&nbsp; Fait par Ilyes avec l'aide de Claude AI &nbsp;•&nbsp; 2025</p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

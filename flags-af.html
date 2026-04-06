@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PixelWave — Drapeaux d'Afrique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- =====================
+       FLAGS — styles.css
+       ===================== -->
+  <style>
+    :root {
+      --bg:      #0a0a1a;
+      --card:    #12122a;
+      --border:  #1e1e4a;
+      --accent:  #b44fff;
+      --good:    #00ff88;
+      --bad:     #ff3c3c;
+      --accent3: #ffe44e;
+      --text:    #e8e8ff;
+      --muted:   #7070a0;
+      --font-px: 'Press Start 2P', monospace;
+      --font-b:  'Rajdhani', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-b);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Nav ── */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,26,.9);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-family: var(--font-px);
+      font-size: .65rem;
+      background: linear-gradient(90deg,#00f0ff,#ff3cac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 6px #00f0ff);
+    }
+    .back-btn {
+      font-family: var(--font-px);
+      font-size: .5rem;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: .5rem .9rem;
+      border-radius: 6px;
+      transition: all .2s;
+    }
+    .back-btn:hover { color: #00f0ff; border-color: #00f0ff; box-shadow: 0 0 10px #00f0ff55; }
+
+    /* ── Wrapper ── */
+    .quiz-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 640px;
+    }
+    h1 {
+      font-family: var(--font-px);
+      font-size: .8rem;
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--accent);
+      letter-spacing: 3px;
+      text-align: center;
+    }
+
+    /* ── Stats ── */
+    .stats {
+      display: flex;
+      gap: 2rem;
+      font-family: var(--font-px);
+      font-size: .52rem;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    .stat-label { color: var(--muted); display: block; margin-bottom: .35rem; }
+    .stat-val   { font-size: .8rem; color: var(--accent3); }
+
+    /* ── Progress ── */
+    .progress-wrap { width:100%; height:6px; background:var(--border); border-radius:999px; overflow:hidden; }
+    .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),#00f0ff); border-radius:999px; transition:width .4s ease; }
+
+    /* ── Flag image box ── */
+    .flag-box {
+      width: 300px;
+      height: 190px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      box-shadow: 0 0 30px #b44fff44, 0 0 60px #b44fff22;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0d20;
+      transition: border-color .3s, box-shadow .3s;
+      position: relative;
+    }
+    .flag-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+    }
+    .flag-box .flag-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-px);
+      font-size: .5rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      background: #0d0d20;
+      transition: opacity .3s;
+    }
+    .flag-box img.loaded + .flag-loader,
+    .flag-box .flag-loader.hidden { opacity: 0; pointer-events: none; }
+
+    .flag-box.correct { border-color: var(--good); box-shadow: 0 0 40px #00ff8866; }
+    .flag-box.wrong   { border-color: var(--bad);  box-shadow: 0 0 40px #ff3c3c66; }
+
+    /* ── Answer grid ── */
+    .answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+      width: 100%;
+    }
+    .ans-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 1.05rem;
+      font-weight: 600;
+      padding: .9rem 1rem;
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .5px;
+      text-align: center;
+    }
+    .ans-btn:hover:not(:disabled) { border-color: var(--accent); background: #1a1a40; color: var(--accent); }
+    .ans-btn.correct { background: #00441a; border-color: var(--good); color: var(--good); }
+    .ans-btn.wrong   { background: #440000; border-color: var(--bad);  color: var(--bad); }
+    .ans-btn:disabled { cursor: default; opacity: .7; }
+
+    /* ── Feedback ── */
+    .feedback { font-family: var(--font-px); font-size: .58rem; letter-spacing: 2px; min-height: 1.5em; text-align: center; }
+    .feedback.correct { color: var(--good); }
+    .feedback.wrong   { color: var(--bad); }
+
+    /* ── Next btn ── */
+    .next-btn {
+      font-family: var(--font-px);
+      font-size: .52rem;
+      letter-spacing: 2px;
+      padding: .75rem 2rem;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      transition: all .2s;
+      display: none;
+    }
+    .next-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 20px var(--accent); }
+    .next-btn.visible { display: block; }
+
+    /* ── Result screen ── */
+    .result-screen { display: none; flex-direction: column; align-items: center; gap: 1.5rem; text-align: center; }
+    .result-screen.show { display: flex; }
+    .result-title { font-family: var(--font-px); font-size: .9rem; color: var(--accent3); text-shadow: 0 0 20px var(--accent3); }
+    .result-score { font-family: var(--font-px); font-size: 2.5rem; color: var(--good); }
+    .restart-btn {
+      font-family: var(--font-px);
+      font-size: .52rem;
+      letter-spacing: 2px;
+      padding: .75rem 2rem;
+      border: 2px solid var(--good);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--good);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .restart-btn:hover { background: var(--good); color: #000; box-shadow: 0 0 20px var(--good); }
+
+    @media (max-width: 400px) {
+      .flag-box { width: 260px; height: 160px; }
+      .answer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <a href="index.html" class="back-btn">← RETOUR</a>
+  </div>
+
+  <div class="quiz-wrapper">
+    <h1>🏳️ DRAPEAUX D'EUROPE</h1>
+
+    <div class="stats">
+      <div><span class="stat-label">QUESTION</span><span class="stat-val" id="qNum">1 / 20</span></div>
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">STREAK</span><span class="stat-val" id="streakEl">0🔥</span></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <div id="quizArea" style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;width:100%">
+      <!-- Flag image -->
+      <div class="flag-box" id="flagBox">
+        <img id="flagImg" src="" alt="Drapeau" />
+        <div class="flag-loader" id="flagLoader">CHARGEMENT…</div>
+      </div>
+
+      <div class="answer-grid" id="answerGrid"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn">SUIVANT →</button>
+    </div>
+
+    <!-- Result screen -->
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title">QUIZ TERMINÉ !</div>
+      <div class="result-score" id="finalScore">—</div>
+      <div style="font-size:1.1rem;color:#7070a0">/ 20 bonnes réponses</div>
+      <div id="medal" style="font-size:4rem;margin:.5rem 0">🏅</div>
+      <button class="restart-btn" id="restartBtn">↺ REJOUER</button>
+    </div>
+  </div>
+
+  <!-- =====================
+       FLAGS — game.js
+       ===================== -->
+  <script>
+    // country code (ISO 3166-1 alpha-2 lowercase) → used for flagcdn.com
+    // country code (ISO 3166-1 alpha-2 lowercase) → used for flagcdn.com
+const countries = [
+  { name:'Afrique du Sud',     code:'za' },
+  { name:'Algérie',            code:'dz' },
+  { name:'Angola',             code:'ao' },
+  { name:'Bénin',              code:'bj' },
+  { name:'Botswana',           code:'bw' },
+  { name:'Burkina Faso',       code:'bf' },
+  { name:'Burundi',            code:'bi' },
+  { name:'Cap-Vert',           code:'cv' },
+  { name:'Cameroun',           code:'cm' },
+  { name:'République centrafricaine', code:'cf' },
+  { name:'Tchad',              code:'td' },
+  { name:'Comores',            code:'km' },
+  { name:'République du Congo', code:'cg' },
+  { name:'République démocratique du Congo', code:'cd' },
+  { name:'Côte d’Ivoire',      code:'ci' },
+  { name:'Djibouti',           code:'dj' },
+  { name:'Égypte',             code:'eg' },
+  { name:'Guinée équatoriale', code:'gq' },
+  { name:'Érythrée',           code:'er' },
+  { name:'Eswatini',           code:'sz' },
+  { name:'Éthiopie',           code:'et' },
+  { name:'Gabon',              code:'ga' },
+  { name:'Gambie',             code:'gm' },
+  { name:'Ghana',              code:'gh' },
+  { name:'Guinée',             code:'gn' },
+  { name:'Guinée-Bissau',      code:'gw' },
+  { name:'Kenya',              code:'ke' },
+  { name:'Lesotho',            code:'ls' },
+  { name:'Libéria',            code:'lr' },
+  { name:'Libye',              code:'ly' },
+  { name:'Madagascar',         code:'mg' },
+  { name:'Malawi',             code:'mw' },
+  { name:'Mali',               code:'ml' },
+  { name:'Mauritanie',         code:'mr' },
+  { name:'Maurice',            code:'mu' },
+  { name:'Maroc',              code:'ma' },
+  { name:'Mozambique',         code:'mz' },
+  { name:'Namibie',            code:'na' },
+  { name:'Niger',              code:'ne' },
+  { name:'Nigeria',            code:'ng' },
+  { name:'Rwanda',             code:'rw' },
+  { name:'Sao Tomé-et-Principe', code:'st' },
+  { name:'Sénégal',            code:'sn' },
+  { name:'Seychelles',         code:'sc' },
+  { name:'Sierra Leone',       code:'sl' },
+  { name:'Somalie',            code:'so' },
+  { name:'Soudan',             code:'sd' },
+  { name:'Soudan du Sud',      code:'ss' },
+  { name:'Tanzanie',           code:'tz' },
+  { name:'Togo',               code:'tg' },
+  { name:'Tunisie',            code:'tn' },
+  { name:'Ouganda',            code:'ug' },
+  { name:'Zambie',             code:'zm' },
+  { name:'Zimbabwe',           code:'zw' },
+];
+
+    function flagUrl(code) {
+      // flagcdn.com provides free flag images
+      return `https://flagcdn.com/w320/${code}.png`;
+    }
+
+    const TOTAL_Q  = 20;
+    let questions  = [];
+    let current    = 0;
+    let score      = 0;
+    let streak     = 0;
+    let answered   = false;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length-1; i>0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+      }
+      return a;
+    }
+
+    function generateQuestions() {
+      const pool = shuffle(countries).slice(0, TOTAL_Q);
+      questions = pool.map(correct => {
+        const distractors = shuffle(countries.filter(c => c.code !== correct.code)).slice(0, 3);
+        const options = shuffle([correct, ...distractors]);
+        return { correct, options };
+      });
+    }
+
+    function renderQuestion() {
+      const q = questions[current];
+      answered = false;
+
+      // Update flag image
+      const img    = document.getElementById('flagImg');
+      const loader = document.getElementById('flagLoader');
+      const box    = document.getElementById('flagBox');
+
+      box.className = 'flag-box';
+      loader.classList.remove('hidden');
+      img.src = '';
+
+      img.onload = () => { loader.classList.add('hidden'); };
+      img.onerror = () => {
+        loader.textContent = '🏳️ IMAGE INDISPONIBLE';
+      };
+      img.src = flagUrl(q.correct.code);
+      img.alt = `Drapeau de ${q.correct.name}`;
+
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('nextBtn').classList.remove('visible');
+      document.getElementById('qNum').textContent = `${current+1} / ${TOTAL_Q}`;
+      document.getElementById('progressFill').style.width = `${(current/TOTAL_Q)*100}%`;
+
+      const grid = document.getElementById('answerGrid');
+      grid.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'ans-btn';
+        btn.textContent = opt.name;
+        btn.addEventListener('click', () => handleAnswer(btn, opt.name, q.correct.name));
+        grid.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(btn, chosen, correct) {
+      if (answered) return;
+      answered = true;
+
+      document.querySelectorAll('.ans-btn').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === correct) b.classList.add('correct');
+      });
+
+      const fb  = document.getElementById('feedback');
+      const box = document.getElementById('flagBox');
+
+      if (chosen === correct) {
+        score++;
+        streak++;
+        btn.classList.add('correct');
+        fb.textContent = `✓ CORRECT !${streak > 1 ? ` STREAK ${streak}🔥` : ''}`;
+        fb.className = 'feedback correct';
+        box.classList.add('correct');
+      } else {
+        streak = 0;
+        btn.classList.add('wrong');
+        fb.textContent = `✗ RATÉ — C'était ${correct}`;
+        fb.className = 'feedback wrong';
+        box.classList.add('wrong');
+      }
+
+      document.getElementById('scoreEl').textContent  = score;
+      document.getElementById('streakEl').textContent = `${streak}🔥`;
+      document.getElementById('nextBtn').classList.add('visible');
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      current++;
+      if (current >= TOTAL_Q) return showResult();
+      renderQuestion();
+    });
+
+    function showResult() {
+      document.getElementById('quizArea').style.display = 'none';
+      const rs = document.getElementById('resultScreen');
+      rs.classList.add('show');
+      document.getElementById('finalScore').textContent = score;
+      const pct = score / TOTAL_Q;
+      document.getElementById('medal').textContent = pct>=.9?'🥇':pct>=.7?'🥈':pct>=.5?'🥉':'😅';
+      document.getElementById('progressFill').style.width = '100%';
+    }
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      document.getElementById('quizArea').style.display = 'flex';
+      document.getElementById('resultScreen').classList.remove('show');
+      current=0; score=0; streak=0;
+      document.getElementById('scoreEl').textContent  = 0;
+      document.getElementById('streakEl').textContent = '0🔥';
+      generateQuestions();
+      renderQuestion();
+    });
+
+    generateQuestions();
+    renderQuestion();
+  </script>
+</body>
+</html>
