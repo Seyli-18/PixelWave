@@ -37,15 +37,20 @@
         .then((result) => {
           const user = result.user;
 
+          // Masquer le bouton
+          btn.style.display = "none";
+
+          // Afficher l'utilisateur à la place
           userInfo.innerHTML = `
-            <img src="${user.photoURL}" width="40" style="border-radius:50%"><br>
-            👾 ${user.displayName}
-          `;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    });
+           <img src="${user.photoURL}" width="40" style="border-radius:50%"><br>
+          👾 ${user.displayName}
+         `;
+      })
+      .catch((error) => {
+        console.error(error);
+        alert(error.message);
+      });
+  });
   });
 </script>
 </head>
@@ -66,9 +71,10 @@
     <input id="searchInput" type="text" placeholder="Chercher un jeu…" />
   </div>
 
-  <div class="auth">
-    <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
-  </div>
+<div class="auth">
+  <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
+  <p id="userInfo"></p>
+</div>
 </header>
 
   <!-- ── Hero ── -->
