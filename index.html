@@ -37,51 +37,43 @@
         .then((result) => {
           const user = result.user;
 
-          // Masquer le bouton
-          btn.style.display = "none";
-
-          // Afficher l'utilisateur à la place
           userInfo.innerHTML = `
-           <img src="${user.photoURL}" width="40" style="border-radius:50%"><br>
-          👾 ${user.displayName}
-         `;
-      })
-      .catch((error) => {
-        console.error(error);
-        alert(error.message);
-      });
-  });
+            <img src="${user.photoURL}" width="40" style="border-radius:50%"><br>
+            👾 ${user.displayName}
+          `;
+        })
+        .catch((error) => {
+          console.error(error);
+          alert(error.message);
+        });
+    });
   });
 </script>
 <meta name="google-site-verification" content="h9Vq-qmq-8eekdE0RTIX8DzxmztgvLF30dBKJP1GlCE" />
 </head>
 <body>
-
   <!-- ── Header ── -->
-<header>
-  <div class="logo">PIXEL<span style="color:#ff3cac;-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-  
-  <nav>
-    <a href="#">Accueil</a>
-    <a href="#">Top Jeux</a>
-    <a href="#">Nouveautés</a>
-  </nav>
-
-  <div class="search-wrap">
-    <span class="icon">🔍</span>
-    <input id="searchInput" type="text" placeholder="Chercher un jeu…" />
-  </div>
-
-<div class="auth">
-  <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
-  <p id="userInfo"></p>
-</div>
-</header>
+  <header>
+    <div class="logo">PIXEL<span style="color:#ff3cac;-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <nav>
+      <a href="#">Accueil</a>
+      <a href="#">Top Jeux</a>
+      <a href="#">Nouveautés</a>
+    </nav>
+    <div class="search-wrap">
+      <span class="icon">🔍</span>
+      <input id="searchInput" type="text" placeholder="Chercher un jeu…" />
+    </div>
+    <div class="auth">
+      <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
+      <p id="userInfo"></p>
+    </div>
+  </header>
 
   <!-- ── Hero ── -->
   <section class="hero">
     <h1>JOUE GRATUITEMENT<br>DIRECTEMENT DANS TON NAVIGATEUR</h1>
-    <p>Des jeux rétro &amp; modernes — sans téléchargement.</p>
+    <p>Des centaines de jeux rétro &amp; modernes — sans téléchargement.</p>
   </section>
 
   <!-- ── Category chips ── -->
@@ -100,7 +92,7 @@
 
   <!-- ── Footer ── -->
   <footer>
-    <p><span>PIXELWAVE</span> &nbsp;•&nbsp; Fait par Ilyes avec l'aide de Claude AI &nbsp;•&nbsp; 2025</p>
+    <p><span>PIXELWAVE</span> &nbsp;•&nbsp; Fait avec ♥ pour les gamers &nbsp;•&nbsp; 2025</p>
   </footer>
 
   <script src="main.js"></script>
