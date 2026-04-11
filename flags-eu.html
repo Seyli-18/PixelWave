@@ -6,6 +6,7 @@
   <title>PixelWave — Drapeaux d'Europe</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css"/>
 
   <!-- =====================
        FLAGS — styles.css
@@ -269,56 +270,69 @@
     </div>
   </div>
 
+  <div style="width:100%;max-width:640px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
   <!-- =====================
        FLAGS — game.js
        ===================== -->
   <script>
     // country code (ISO 3166-1 alpha-2 lowercase) → used for flagcdn.com
     const countries = [
-      { name:'France',        code:'fr' },
-      { name:'Allemagne',     code:'de' },
-      { name:'Italie',        code:'it' },
-      { name:'Espagne',       code:'es' },
-      { name:'Portugal',      code:'pt' },
-      { name:'Belgique',      code:'be' },
-      { name:'Pays-Bas',      code:'nl' },
-      { name:'Suisse',        code:'ch' },
-      { name:'Autriche',      code:'at' },
-      { name:'Suède',         code:'se' },
-      { name:'Norvège',       code:'no' },
-      { name:'Danemark',      code:'dk' },
-      { name:'Finlande',      code:'fi' },
-      { name:'Grèce',         code:'gr' },
-      { name:'Pologne',       code:'pl' },
-      { name:'Roumanie',      code:'ro' },
-      { name:'Hongrie',       code:'hu' },
-      { name:'Tchéquie',      code:'cz' },
-      { name:'Slovaquie',     code:'sk' },
-      { name:'Croatie',       code:'hr' },
-      { name:'Ukraine',       code:'ua' },
-      { name:'Irlande',       code:'ie' },
-      { name:'Islande',       code:'is' },
-      { name:'Bulgarie',      code:'bg' },
-      { name:'Serbie',        code:'rs' },
-      { name:'Slovénie',      code:'si' },
-      { name:'Albanie',       code:'al' },
-      { name:'Monténégro',    code:'me' },
-      { name:'Macédoine',     code:'mk' },
-      { name:'Moldavie',      code:'md' },
-      { name:'Lituanie',      code:'lt' },
-      { name:'Lettonie',      code:'lv' },
-      { name:'Estonie',       code:'ee' },
-      { name:'Luxembourg',    code:'lu' },
-      { name:'Malte',         code:'mt' },
-      { name:'Chypre',        code:'cy' },
-      { name:'Andorre',       code:'ad' },
-      { name:'Liechtenstein', code:'li' },
-      { name:'Saint-Marin',   code:'sm' },
-      { name:'Kosovo',        code:'xk' },
-      { name:'Bosnie',        code:'ba' },
-      { name:'Biélorussie',   code:'by' },
-      { name:'Russie',        code:'ru' },
-      { name:'Monaco',        code:'mc' },
+      { name:'Afrique du Sud',     code:'za' },
+      { name:'Algérie',            code:'dz' },
+      { name:'Angola',             code:'ao' },
+      { name:'Bénin',              code:'bj' },
+      { name:'Botswana',           code:'bw' },        
+      { name:'Burkina Faso',       code:'bf' },
+      { name:'Burundi',            code:'bi' },
+      { name:'Cap-Vert',           code:'cv' },
+      { name:'Cameroun',           code:'cm' },
+      { name:'République centrafricaine', code:'cf' },
+      { name:'Tchad',              code:'td' },
+      { name:'Comores',            code:'km' },
+      { name:'République du Congo', code:'cg' },
+      { name:'République démocratique du Congo', code:'cd' },
+      { name:'Côte d’Ivoire',      code:'ci' },
+      { name:'Djibouti',           code:'dj' },
+      { name:'Égypte',             code:'eg' },
+      { name:'Guinée équatoriale', code:'gq' },
+      { name:'Érythrée',           code:'er' },        
+      { name:'Eswatini',           code:'sz' },
+      { name:'Éthiopie',           code:'et' },
+      { name:'Gabon',              code:'ga' },
+      { name:'Gambie',             code:'gm' },
+      { name:'Ghana',              code:'gh' },
+      { name:'Guinée',             code:'gn' },
+      { name:'Guinée-Bissau',      code:'gw' },
+      { name:'Kenya',              code:'ke' },
+      { name:'Lesotho',            code:'ls' },        
+      { name:'Libéria',            code:'lr' },
+      { name:'Libye',              code:'ly' },
+      { name:'Madagascar',         code:'mg' },
+      { name:'Malawi',             code:'mw' },
+      { name:'Mali',               code:'ml' },
+      { name:'Mauritanie',         code:'mr' },
+      { name:'Maurice',            code:'mu' },
+      { name:'Maroc',              code:'ma' },
+      { name:'Mozambique',         code:'mz' },
+      { name:'Namibie',            code:'na' },
+      { name:'Niger',              code:'ne' },
+      { name:'Nigeria',            code:'ng' },
+      { name:'Rwanda',             code:'rw' },        
+      { name:'Sao Tomé-et-Principe', code:'st' },
+      { name:'Sénégal',            code:'sn' },
+      { name:'Seychelles',         code:'sc' },
+      { name:'Sierra Leone',       code:'sl' },
+      { name:'Somalie',            code:'so' },
+      { name:'Soudan',             code:'sd' },
+      { name:'Soudan du Sud',      code:'ss' },
+      { name:'Tanzanie',           code:'tz' },
+      { name:'Togo',               code:'tg' },
+      { name:'Tunisie',            code:'tn' },
+      { name:'Ouganda',            code:'ug' },
+      { name:'Zambie',             code:'zm' },
+      { name:'Zimbabwe',           code:'zw' },
     ];
 
     function flagUrl(code) {
@@ -434,6 +448,8 @@
       const pct = score / TOTAL_Q;
       document.getElementById('medal').textContent = pct>=.9?'🥇':pct>=.7?'🥈':pct>=.5?'🥉':'😅';
       document.getElementById('progressFill').style.width = '100%';
+      if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+      if (window.PixelWave && window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
     }
 
     document.getElementById('restartBtn').addEventListener('click', () => {
@@ -448,6 +464,12 @@
 
     generateQuestions();
     renderQuestion();
+  </script>
+  <script src="shared.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      window.PixelWave.init('flags', '#b44fff');
+    });
   </script>
 </body>
 </html>
