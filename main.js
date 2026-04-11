@@ -1,7 +1,7 @@
 /* ===========================
    PIXELWAVE — main.js
    =========================== */
-
+ 
 const games = [
   {
     id: 'snake',
@@ -11,8 +11,8 @@ const games = [
     bg: 'snake-bg',
     tag: 'Arcade',
     stars: '★★★★★',
-    badge: 'NEW',
-    badgeClass: 'new',
+    badge: 'HOT',
+    badgeClass: 'hot',
     href: 'snake.html',
     category: 'arcade',
   },
@@ -45,41 +45,42 @@ const games = [
   {
     id: 'pacman',
     title: 'Pac-Man',
-    desc: 'Mange les pac-dots, fuis les fantômes.',
+    desc: 'Mange les pac-dots, fuis les fantômes. WAKA WAKA !',
     icon: '👾',
     bg: 'pacman-bg',
     tag: 'Arcade',
     stars: '★★★★★',
-    badge: 'NEW',
-    badgeClass: 'new',
+    badge: 'HOT',
+    badgeClass: 'hot',
     href: 'pacman.html',
     category: 'arcade',
   },
   {
     id: 'tetris',
     title: 'Tetris',
-    desc: 'Bientôt disponible — les pièces tombent, la musique hypnotise.',
+    desc: 'Empile les pièces, complète les lignes. La musique hypnotise.',
     icon: '🟦',
-    bg: 'coming-bg',
+    bg: 'tetris-bg',
     tag: 'Puzzle',
     stars: '★★★★☆',
-    badge: null,
-    href: null,
+    badge: 'NEW',
+    badgeClass: 'new',
+    href: 'tetris.html',
     category: 'puzzle',
-    comingSoon: true,
+    comingSoon: false,
   },
   {
     id: 'breakout',
     title: 'Breakout',
     desc: 'Casse les briques, ne laisse pas la balle tomber.',
     icon: '🧱',
-    bg: 'coming-bg',
+    bg: 'breakout-bg',
     tag: 'Arcade',
     stars: '★★★☆☆',
     badge: null,
-    href: null,
+    href: 'breakout.html',
     category: 'arcade',
-    comingSoon: true,
+    comingSoon: false,
   },
   {
     id: 'memory',
@@ -95,9 +96,9 @@ const games = [
     comingSoon: true,
   },
 ];
-
+ 
 let activeFilter = 'all';
-
+ 
 /* ── Build a single card ──────────────────── */
 function buildCard(game, delay) {
   const isLink = game.href && !game.comingSoon;
@@ -106,17 +107,17 @@ function buildCard(game, delay) {
   card.className = 'game-card';
   card.style.animationDelay = `${delay}ms`;
   card.dataset.category = game.category;
-
+ 
   const comingLabel = game.comingSoon
     ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;">
          <span style="font-family:'Press Start 2P',monospace;font-size:.5rem;color:#7070a0;letter-spacing:2px">BIENTÔT</span>
        </div>`
     : `<div class="play-overlay"><div class="play-btn">▶ JOUER</div></div>`;
-
+ 
   const badge = game.badge
     ? `<span class="badge ${game.badgeClass}">${game.badge}</span>`
     : '';
-
+ 
   card.innerHTML = `
     <div class="card-thumb ${game.bg}">
       <span class="thumb-icon">${game.icon}</span>
@@ -132,30 +133,30 @@ function buildCard(game, delay) {
       </div>
     </div>
   `;
-
+ 
   return card;
 }
-
+ 
 /* ── Render grid ──────────────────────────── */
 function renderGrid(filter = 'all') {
   const grid = document.getElementById('gameGrid');
   grid.innerHTML = '';
-
+ 
   const filtered = filter === 'all'
     ? games
     : games.filter(g => g.category === filter);
-
+ 
   filtered.forEach((game, i) => {
     grid.appendChild(buildCard(game, i * 80));
   });
 }
-
+ 
 /* ── Search ───────────────────────────────── */
 function handleSearch(e) {
   const q = e.target.value.toLowerCase().trim();
   const grid = document.getElementById('gameGrid');
   grid.innerHTML = '';
-
+ 
   const results = q
     ? games.filter(g =>
         g.title.toLowerCase().includes(q) ||
@@ -163,10 +164,10 @@ function handleSearch(e) {
         g.category.toLowerCase().includes(q)
       )
     : games;
-
+ 
   results.forEach((game, i) => grid.appendChild(buildCard(game, i * 80)));
 }
-
+ 
 /* ── Category chips ───────────────────────── */
 function initChips() {
   document.querySelectorAll('.chip').forEach(chip => {
@@ -178,12 +179,12 @@ function initChips() {
     });
   });
 }
-
+ 
 /* ── Init ─────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   renderGrid();
   initChips();
-
+ 
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.addEventListener('input', handleSearch);
 });
