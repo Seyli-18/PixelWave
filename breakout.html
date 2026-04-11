@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PixelWave — Breakout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    :root{
+      --bg:#0a0a1a;--accent:#ff6b35;--bad:#ff3c3c;
+      --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
+      --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
+    .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
+
+    .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1rem;width:100%}
+    h1{font-family:var(--font-px);font-size:.8rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px}
+
+    .stats{display:flex;gap:2rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
+    .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
+    .stat-val{font-size:.8rem;color:var(--accent)}
+
+    #gameCanvas{border:2px solid #ff6b3544;border-radius:6px;box-shadow:0 0 30px #ff6b3522;background:#000;display:block;max-width:100%;cursor:none}
+
+    .msg{font-family:var(--font-px);font-size:.55rem;color:var(--muted);letter-spacing:2px;min-height:1.8em;text-align:center;line-height:1.8}
+    .controls{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+    .btn{font-family:var(--font-px);font-size:.48rem;letter-spacing:2px;padding:.6rem 1.2rem;border:2px solid;border-radius:8px;cursor:pointer;background:transparent;transition:all .2s}
+    .btn-start{color:var(--accent);border-color:var(--accent)}
+    .btn-start:hover{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+    .btn-reset{color:var(--bad);border-color:var(--bad)}
+    .btn-reset:hover{background:var(--bad);color:#fff;box-shadow:0 0 20px var(--bad)}
+
+    .paddle-slider{width:100%;max-width:360px;accent-color:var(--accent)}
+
+    .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
+    .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <a href="index.html" class="back-btn">← RETOUR</a>
+  </div>
+
+  <div class="game-area">
+    <h1>🧱 BREAKOUT</h1>
+
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">VIES</span><span class="stat-val" id="livesEl">❤️❤️❤️</span></div>
+      <div><span class="stat-label">NIVEAU</span><span class="stat-val" id="levelEl">1</span></div>
+    </div>
+
+    <canvas id="gameCanvas" width="360" height="480"></canvas>
+    <p class="msg" id="msgEl">APPUIE SUR START !</p>
+
+    <div class="controls">
+      <button class="btn btn-start" id="startBtn">▶ START</button>
+      <button class="btn btn-reset" id="resetBtn">↺ RESET</button>
+    </div>
+
+    <!-- Mobile slider -->
+    <input type="range" class="paddle-slider" id="paddleSlider" min="0" max="100" value="50"/>
+
+    <p class="tips">
+      SOURIS / TACTILE sur le canvas pour déplacer la raquette<br>
+      OU utilise le SLIDER ci-dessus sur mobile
+    </p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script>
+  (function(){
+    const canvas=document.getElementById('gameCanvas');
+    const ctx=canvas.getContext('2d');
+    const msgEl=document.getElementById('msgEl');
+    const W=canvas.width, H=canvas.height;
+
+    // Layout
+    const PAD_W=70, PAD_H=10, PAD_Y=H-40;
+    const BALL_R=7;
+    const BRICK_COLS=9, BRICK_ROWS=6;
+    const BRICK_W=Math.floor((W-20)/BRICK_COLS)-4;
+    const BRICK_H=16;
+    const BRICK_PAD=4;
+    const BRICK_OFFSET_X=10;
+    const BRICK_OFFSET_Y=50;
+
+    // Brick colors by row
+    const ROW_COLORS=['#ff3c3c','#ff6b35','#ffe44e','#00ff88','#00f0ff','#b44fff'];
+    const ROW_PTS   =[7,        6,        5,        4,        3,        2];
+
+    let bricks, ball, padX, lives, score, best, level, running, rafId, lastTs;
+    let mouseX=-1;
+
+    function initBricks(){
+      bricks=[];
+      for(let r=0;r<BRICK_ROWS;r++){
+        for(let c=0;c<BRICK_COLS;c++){
+          bricks.push({
+            x: BRICK_OFFSET_X + c*(BRICK_W+BRICK_PAD),
+            y: BRICK_OFFSET_Y + r*(BRICK_H+BRICK_PAD),
+            w: BRICK_W, h: BRICK_H,
+            color: ROW_COLORS[r],
+            pts: ROW_PTS[r] * level,
+            alive: true,
+            hits: r < 2 ? 2 : 1, // top 2 rows need 2 hits
+          });
+        }
+      }
+    }
+
+    function resetBall(){
+      const baseSpeed = 3.5 + (level-1)*0.4;
+      const angle = -Math.PI/2 + (Math.random()-.5)*(Math.PI/3);
+      ball={ x:W/2, y:PAD_Y-BALL_R-5, dx:Math.cos(angle)*baseSpeed, dy:Math.sin(angle)*baseSpeed, r:BALL_R, trail:[] };
+    }
+
+    function init(){
+      lives=3; score=0; level=1;
+      best=parseInt(localStorage.getItem('breakBest')||'0');
+      padX=W/2; running=false; cancelAnimationFrame(rafId);
+      initBricks(); resetBall();
+      updateUI(); draw();
+      msgEl.textContent='APPUIE SUR START !'; msgEl.style.color='';
+    }
+
+    function updateUI(){
+      document.getElementById('scoreEl').textContent=score;
+      document.getElementById('bestEl').textContent=best;
+      document.getElementById('livesEl').textContent='❤️'.repeat(Math.max(0,lives));
+      document.getElementById('levelEl').textContent=level;
+    }
+
+    /* ── Draw ── */
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+
+      // Grid bg
+      ctx.strokeStyle='#0a0a2a'; ctx.lineWidth=.5;
+      for(let x=0;x<W;x+=20){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+      for(let y=0;y<H;y+=20){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+
+      // Bricks
+      bricks.forEach(b=>{
+        if(!b.alive) return;
+        ctx.fillStyle = b.hits===2 ? '#fff' : b.color;
+        ctx.shadowColor=b.color; ctx.shadowBlur=8;
+        ctx.fillRect(b.x,b.y,b.w,b.h);
+        // shine
+        ctx.fillStyle='rgba(255,255,255,.25)';
+        ctx.fillRect(b.x+2,b.y+2,b.w-4,4);
+        ctx.shadowBlur=0;
+      });
+
+      // Ball trail
+      ball.trail.forEach((t,i)=>{
+        const a = (i/ball.trail.length)*0.4;
+        ctx.fillStyle=`rgba(255,107,53,${a})`;
+        ctx.beginPath(); ctx.arc(t.x,t.y,ball.r*(i/ball.trail.length),0,Math.PI*2); ctx.fill();
+      });
+
+      // Ball
+      ctx.fillStyle='#fff'; ctx.shadowColor='#ff6b35'; ctx.shadowBlur=16;
+      ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+
+      // Paddle
+      const px=padX-PAD_W/2;
+      ctx.fillStyle='#ff6b35'; ctx.shadowColor='#ff6b35'; ctx.shadowBlur=12;
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(px,PAD_Y,PAD_W,PAD_H,5) : ctx.rect(px,PAD_Y,PAD_W,PAD_H);
+      ctx.fill(); ctx.shadowBlur=0;
+      // Shine
+      ctx.fillStyle='rgba(255,255,255,.3)';
+      ctx.fillRect(px+4,PAD_Y+2,PAD_W-8,3);
+    }
+
+    /* ── Physics ── */
+    function step(dt){
+      // Trail
+      ball.trail.push({x:ball.x,y:ball.y});
+      if(ball.trail.length>8) ball.trail.shift();
+
+      ball.x+=ball.dx; ball.y+=ball.dy;
+
+      // Walls
+      if(ball.x-ball.r<0){ ball.x=ball.r; ball.dx=Math.abs(ball.dx); }
+      if(ball.x+ball.r>W){ ball.x=W-ball.r; ball.dx=-Math.abs(ball.dx); }
+      if(ball.y-ball.r<0){ ball.y=ball.r; ball.dy=Math.abs(ball.dy); }
+
+      // Ball lost
+      if(ball.y-ball.r>H){
+        lives--; updateUI();
+        if(lives<=0){ gameOver(); return; }
+        resetBall();
+        msgEl.textContent='AÏÏE !'; msgEl.style.color='#ff3c3c';
+        setTimeout(()=>{msgEl.textContent='';msgEl.style.color='';},1000);
+      }
+
+      // Paddle collision
+      const px=padX-PAD_W/2;
+      if(ball.y+ball.r>=PAD_Y && ball.y+ball.r<=PAD_Y+PAD_H+ball.r &&
+         ball.x>=px-ball.r && ball.x<=px+PAD_W+ball.r && ball.dy>0){
+        const rel=(ball.x-(px+PAD_W/2))/(PAD_W/2); // -1..1
+        const angle=-Math.PI/2 + rel*(Math.PI/3);
+        const spd=Math.hypot(ball.dx,ball.dy);
+        ball.dx=Math.cos(angle)*spd;
+        ball.dy=Math.sin(angle)*spd;
+        ball.y=PAD_Y-ball.r;
+      }
+
+      // Brick collisions
+      let allDead=true;
+      bricks.forEach(b=>{
+        if(!b.alive){ return; }
+        allDead=false;
+        const overlapX=ball.x>b.x-ball.r && ball.x<b.x+b.w+ball.r;
+        const overlapY=ball.y>b.y-ball.r && ball.y<b.y+b.h+ball.r;
+        if(!overlapX||!overlapY) return;
+
+        const fromLeft  =Math.abs(ball.x-(b.x-ball.r));
+        const fromRight =Math.abs(ball.x-(b.x+b.w+ball.r));
+        const fromTop   =Math.abs(ball.y-(b.y-ball.r));
+        const fromBottom=Math.abs(ball.y-(b.y+b.h+ball.r));
+        const minD=Math.min(fromLeft,fromRight,fromTop,fromBottom);
+
+        b.hits--;
+        if(b.hits<=0){ b.alive=false; score+=b.pts; if(score>best){best=score;localStorage.setItem('breakBest',best);} }
+        updateUI();
+
+        if(minD===fromLeft||minD===fromRight) ball.dx*=-1;
+        else ball.dy*=-1;
+      });
+
+      if(allDead){
+        level++;
+        initBricks(); resetBall();
+        msgEl.textContent=`🎉 NIVEAU ${level} !`;
+        setTimeout(()=>msgEl.textContent='',1500);
+        updateUI();
+      }
+    }
+
+    function loop(ts){
+      if(!running)return;
+      rafId=requestAnimationFrame(loop);
+      // Move paddle toward mouse
+      if(mouseX>0){
+        const target=Math.max(PAD_W/2, Math.min(W-PAD_W/2, mouseX));
+        padX+=(target-padX)*0.18;
+      }
+      step(ts-lastTs); lastTs=ts;
+      draw();
+    }
+
+    function gameOver(){
+      running=false; cancelAnimationFrame(rafId);
+      msgEl.textContent=`GAME OVER — SCORE ${score}`; msgEl.style.color='#ff3c3c';
+      if(window.PixelWave&&window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+      if(window.PixelWave&&window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
+    }
+
+    /* ── Controls ── */
+    document.getElementById('startBtn').addEventListener('click',()=>{
+      if(running)return; running=true; lastTs=performance.now();
+      msgEl.textContent=''; rafId=requestAnimationFrame(loop);
+    });
+    document.getElementById('resetBtn').addEventListener('click',()=>{ running=false; cancelAnimationFrame(rafId); init(); });
+
+    // Mouse
+    canvas.addEventListener('mousemove',e=>{
+      const r=canvas.getBoundingClientRect();
+      mouseX=(e.clientX-r.left)*(W/r.width);
+    });
+
+    // Touch on canvas
+    canvas.addEventListener('touchmove',e=>{
+      e.preventDefault();
+      const r=canvas.getBoundingClientRect();
+      mouseX=(e.touches[0].clientX-r.left)*(W/r.width);
+    },{passive:false});
+
+    // Slider
+    const slider=document.getElementById('paddleSlider');
+    slider.addEventListener('input',()=>{ mouseX=(slider.value/100)*W; });
+
+    setInterval(()=>{ if(!running) draw(); },100);
+    init();
+  })();
+  </script>
+
+  <script src="shared.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded',()=>{ window.PixelWave.init('breakout','#ff6b35'); });
+  </script>
+</body>
+</html>
