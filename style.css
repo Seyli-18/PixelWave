@@ -288,6 +288,8 @@ nav a:hover { color: var(--accent1); }
 .card-thumb.flag-bg   { background: linear-gradient(135deg, #1a0a2a, #2a1a4a); }
 .card-thumb.pacman-bg { background: linear-gradient(135deg, #2a2000, #4a3800); }
 .card-thumb.coming-bg { background: linear-gradient(135deg, #1a1a2a, #2a2a3a); }
+.card-thumb.tetris-bg { background: linear-gradient(135deg, #001a2a, #002a4a); }
+.card-thumb.breakout-bg { background: linear-gradient(135deg, #2a1000, #4a2000); }
 
 /* Badge */
 .badge {
