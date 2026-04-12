@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PixelWave — Flappy Bird</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    :root{
+      --bg:#0a0a1a;--accent:#ffe44e;--bad:#ff3c3c;
+      --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
+      --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
+    .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
+    .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1rem;width:100%}
+    h1{font-family:var(--font-px);font-size:.8rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px}
+    .stats{display:flex;gap:2.5rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
+    .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
+    .stat-val{font-size:.8rem;color:var(--accent)}
+    #gameCanvas{border:2px solid #ffe44e44;border-radius:8px;box-shadow:0 0 30px #ffe44e22;background:#000;display:block;max-width:100%;cursor:pointer}
+    .msg{font-family:var(--font-px);font-size:.55rem;color:var(--muted);letter-spacing:2px;min-height:1.8em;text-align:center;line-height:1.8}
+    .controls{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+    .btn{font-family:var(--font-px);font-size:.48rem;letter-spacing:2px;padding:.65rem 1.3rem;border:2px solid;border-radius:8px;cursor:pointer;background:transparent;transition:all .2s}
+    .btn-start{color:var(--accent);border-color:var(--accent)}
+    .btn-start:hover{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+    .btn-reset{color:var(--bad);border-color:var(--bad)}
+    .btn-reset:hover{background:var(--bad);color:#fff;box-shadow:0 0 20px var(--bad)}
+    .tap-btn{font-family:var(--font-px);font-size:.6rem;letter-spacing:2px;padding:1rem 2.5rem;border:2px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;margin-top:.5rem}
+    .tap-btn:active{background:#ffe44e33}
+    .tips{font-family:var(--font-px);font-size:.42rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
+    .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <a href="index.html" class="back-btn">← RETOUR</a>
+  </div>
+
+  <div class="game-area">
+    <h1>🐤 FLAPPY BIRD</h1>
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">NIVEAU</span><span class="stat-val" id="levelEl">1</span></div>
+    </div>
+
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
+    <p class="msg" id="msgEl">CLIQUE / ESPACE / TAP POUR COMMENCER</p>
+
+    <div class="controls">
+      <button class="btn btn-reset" id="resetBtn">↺ RESET</button>
+    </div>
+    <button class="tap-btn" id="tapBtn">TAP !</button>
+    <p class="tips">ESPACE · CLIC · TAP — tout fonctionne !</p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script>
+  (function(){
+    const canvas = document.getElementById('gameCanvas');
+    const ctx    = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const msgEl = document.getElementById('msgEl');
+
+    const PIPE_W    = 52;
+    const PIPE_GAP  = 150;
+    const PIPE_SPEED_BASE = 2.2;
+    const GRAVITY   = 0.28;
+    const FLAP      = -6.5;
+    const BIRD_R    = 14;
+
+    let bird, pipes, score, best, level, running, rafId, frameCount, lastPipe;
+    let bgStars = [];
+
+    /* ── Stars BG ── */
+    for(let i=0; i<60; i++) bgStars.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.5+.5, s: Math.random()*.5+.2 });
+
+    function init() {
+      bird = { x: 70, y: H/2, vy: 0, rot: 0, alive: true, frame: 0 };
+      pipes = [];
+      score = 0; level = 1; frameCount = 0; lastPipe = 0;
+      best = parseInt(localStorage.getItem('flappyBest') || '0');
+      running = false;
+      cancelAnimationFrame(rafId);
+      updateUI();
+      draw();
+      msgEl.textContent = 'CLIQUE / ESPACE / TAP POUR COMMENCER';
+      msgEl.style.color = '';
+    }
+
+    function flap() {
+      if (!bird.alive) { init(); return; }
+      if (!running) { running = true; msgEl.textContent = ''; }
+      bird.vy = FLAP;
+    }
+
+    function spawnPipe() {
+      const minTop = 60, maxTop = H - PIPE_GAP - 60;
+      const top = Math.floor(Math.random() * (maxTop - minTop)) + minTop;
+      pipes.push({ x: W + 10, top, scored: false });
+    }
+
+    function pipeSpeed() { return PIPE_SPEED_BASE + (level - 1) * 0.3; }
+
+    function updateUI() {
+      document.getElementById('scoreEl').textContent = score;
+      document.getElementById('bestEl').textContent  = best;
+      document.getElementById('levelEl').textContent = level;
+    }
+
+    function gameOver() {
+      running = false;
+      if (score > best) { best = score; localStorage.setItem('flappyBest', best); }
+      msgEl.textContent = `GAME OVER — SCORE ${score} — TAP POUR REJOUER`;
+      msgEl.style.color = '#ff3c3c';
+      updateUI();
+      if (window.PixelWave && window.PixelWave.submitScore)     window.PixelWave.submitScore(score);
+      if (window.PixelWave && window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
+    }
+
+    /* ── Draw ── */
+    function draw() {
+      ctx.fillStyle = '#05051a';
+      ctx.fillRect(0, 0, W, H);
+
+      // Stars
+      bgStars.forEach(s => {
+        const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 700 + s.x);
+        ctx.fillStyle = `rgba(200,200,255,${pulse * 0.7})`;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+      });
+
+      // Ground
+      ctx.fillStyle = '#1a3a0a';
+      ctx.fillRect(0, H - 30, W, 30);
+      ctx.fillStyle = '#2a5a15';
+      ctx.fillRect(0, H - 30, W, 6);
+
+      // Pipes
+      const pSpeed = pipeSpeed();
+      pipes.forEach(p => {
+        if (running) p.x -= pSpeed;
+
+        // Top pipe
+        ctx.fillStyle = '#1a8a1a';
+        ctx.shadowColor = '#00ff44'; ctx.shadowBlur = 8;
+        ctx.fillRect(p.x, 0, PIPE_W, p.top);
+        // Pipe cap
+        ctx.fillStyle = '#2aaa2a';
+        ctx.fillRect(p.x - 4, p.top - 16, PIPE_W + 8, 16);
+
+        // Bottom pipe
+        ctx.fillStyle = '#1a8a1a';
+        ctx.fillRect(p.x, p.top + PIPE_GAP, PIPE_W, H - p.top - PIPE_GAP - 30);
+        ctx.fillStyle = '#2aaa2a';
+        ctx.fillRect(p.x - 4, p.top + PIPE_GAP, PIPE_W + 8, 16);
+        ctx.shadowBlur = 0;
+
+        // Score
+        if (!p.scored && p.x + PIPE_W < bird.x) {
+          p.scored = true; score++;
+          if (score % 10 === 0) level++;
+          updateUI();
+        }
+      });
+
+      // Bird
+      const bx = bird.x, by = bird.y;
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(Math.min(Math.max(bird.rot, -0.4), 1.2));
+
+      // Body
+      ctx.fillStyle = '#ffe44e'; ctx.shadowColor = '#ffe44e'; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.ellipse(0, 0, BIRD_R, BIRD_R - 2, 0, 0, Math.PI*2); ctx.fill();
+
+      // Wing flap
+      const wingOff = running ? Math.sin(frameCount * 0.3) * 5 : 0;
+      ctx.fillStyle = '#ffcc00';
+      ctx.beginPath(); ctx.ellipse(-4, wingOff, 9, 5, -0.3, 0, Math.PI*2); ctx.fill();
+
+      // Eye
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#000';
+      ctx.beginPath(); ctx.arc(7, -4, 4, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(8, -5, 1.5, 0, Math.PI*2); ctx.fill();
+
+      // Beak
+      ctx.fillStyle = '#ff9900';
+      ctx.beginPath(); ctx.moveTo(BIRD_R, 0); ctx.lineTo(BIRD_R+8, -3); ctx.lineTo(BIRD_R+8, 3); ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // HUD score
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = '#000'; ctx.shadowBlur = 6;
+      ctx.font = 'bold 28px "Press Start 2P", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(score, W/2, 50);
+      ctx.shadowBlur = 0;
+      ctx.textAlign = 'left';
+
+      if (!bird.alive) {
+        ctx.fillStyle = 'rgba(255,0,0,.25)';
+        ctx.fillRect(0, 0, W, H);
+      }
+    }
+
+    /* ── Loop ── */
+    function loop() {
+      rafId = requestAnimationFrame(loop);
+      frameCount++;
+
+      if (running && bird.alive) {
+        bird.vy += GRAVITY;
+        bird.y  += bird.vy;
+        bird.rot = bird.vy * 0.07;
+        bird.frame++;
+
+        // Spawn pipes
+        if (frameCount - lastPipe > Math.max(70, 110 - (level-1)*5)) {
+          spawnPipe(); lastPipe = frameCount;
+        }
+
+        // Remove off-screen pipes
+        pipes = pipes.filter(p => p.x + PIPE_W > -10);
+
+        // Collisions
+        if (bird.y - BIRD_R < 0 || bird.y + BIRD_R > H - 30) { bird.alive = false; gameOver(); }
+
+        pipes.forEach(p => {
+          const inX = bird.x + BIRD_R - 4 > p.x && bird.x - BIRD_R + 4 < p.x + PIPE_W;
+          const inY = bird.y - BIRD_R + 4 < p.top || bird.y + BIRD_R - 4 > p.top + PIPE_GAP;
+          if (inX && inY) { bird.alive = false; gameOver(); }
+        });
+      }
+
+      draw();
+    }
+
+    /* ── Input ── */
+    canvas.addEventListener('click', flap);
+    document.getElementById('tapBtn').addEventListener('click', flap);
+    document.addEventListener('keydown', e => { if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flap(); } });
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); flap(); }, { passive: false });
+    document.getElementById('resetBtn').addEventListener('click', init);
+
+    init();
+    rafId = requestAnimationFrame(loop);
+  })();
+  </script>
+
+  <script src="shared.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => { window.PixelWave.init('flappy', '#ffe44e'); });
+  </script>
+</body>
+</html>
