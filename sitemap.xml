@@ -3,35 +3,70 @@
 
   <url>
     <loc>https://seyli-18.github.io/PixelWave/</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://seyli-18.github.io/PixelWave/flags-af.html</loc>
-    <lastmod>2026-04-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://seyli-18.github.io/PixelWave/flags-eu.html</loc>
-    <lastmod>2026-04-09</lastmod>
+    <loc>https://seyli-18.github.io/PixelWave/snake.html</loc>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://seyli-18.github.io/PixelWave/pacman.html</loc>
-    <lastmod>2026-04-09</lastmod>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://seyli-18.github.io/PixelWave/snake.html</loc>
-    <lastmod>2026-04-09</lastmod>
+    <loc>https://seyli-18.github.io/PixelWave/flags-eu.html</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seyli-18.github.io/PixelWave/flags-af.html</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seyli-18.github.io/PixelWave/tetris.html</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seyli-18.github.io/PixelWave/breakout.html</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seyli-18.github.io/PixelWave/memory.html</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seyli-18.github.io/PixelWave/flappy.html</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://seyli-18.github.io/PixelWave/capitales.html</loc>
+    <lastmod>2026-04-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
