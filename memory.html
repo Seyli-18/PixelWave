@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>PixelWave — Memory Cards</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="shared.css"/>
   <style>
+    html{touch-action:manipulation}
+    
     :root{
       --bg:#0a0a1a;--accent:#ff3cac;--good:#00ff88;--bad:#ff3c3c;
       --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
@@ -54,7 +56,18 @@
     .btn-reset{color:var(--bad);border-color:var(--bad)}
     .btn-reset:hover{background:var(--bad);color:#fff;box-shadow:0 0 20px var(--bad)}
     .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
-  </style>
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
+</style>
+  <script>
+    // Appliquer le thème sauvegardé immédiatement
+    (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 <body>
   <div class="top-bar">
@@ -233,6 +246,30 @@
   <script>
     window.addEventListener('DOMContentLoaded', () => { window.PixelWave.initFullscreen('cardGrid', 'fsBtn');
       window.PixelWave.init('memory', '#ff3cac'); });
+  </script>
+  <script>
+    // ── Pseudo modal avant le 1er start ──
+    (function(){
+      var _origStartBtn = document.getElementById('startBtn');
+      if (!_origStartBtn) return;
+      var _firstStart = true;
+      var _origClick = null;
+      // Clone pour remplacer (évite les listeners multiples)
+      var _newBtn = _origStartBtn.cloneNode(true);
+      _origStartBtn.parentNode.replaceChild(_newBtn, _origStartBtn);
+      _newBtn.addEventListener('click', function(e){
+        if (_firstStart && !localStorage.getItem('pw_pseudo')) {
+          _firstStart = false;
+          e.stopImmediatePropagation();
+          window.PixelWave.promptPseudo('memory', function(){
+            // Simuler le vrai clic après confirmation
+            _newBtn.click();
+          });
+        } else {
+          _firstStart = false;
+        }
+      }, true); // capture phase = before game listener
+    })();
   </script>
 </body>
 </html>
