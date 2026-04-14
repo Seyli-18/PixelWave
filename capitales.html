@@ -90,7 +90,10 @@
 <body>
   <div class="top-bar">
     <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-    <a href="index.html" class="back-btn">← RETOUR</a>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
   </div>
 
   <div class="quiz-wrapper">
@@ -298,7 +301,6 @@
       document.getElementById('medal').textContent = pct>=.9?'🥇':pct>=.7?'🥈':pct>=.5?'🥉':'😅';
       document.getElementById('progressFill').style.width = '100%';
       if (window.PixelWave && window.PixelWave.submitScore)     window.PixelWave.submitScore(score);
-      if (window.PixelWave && window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
     }
 
     document.getElementById('restartBtn').addEventListener('click', () => {
@@ -317,7 +319,8 @@
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => { window.PixelWave.init('capitales', '#00f0ff'); });
+    window.addEventListener('DOMContentLoaded', () => { window.PixelWave.initFullscreen('questionCard', 'fsBtn');
+      window.PixelWave.init('capitales', '#00f0ff'); });
   </script>
 </body>
 </html>
