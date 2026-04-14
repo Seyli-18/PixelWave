@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- prevent zoom on double tap mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
   <title>PixelWave — Flappy Bird</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
@@ -14,10 +16,13 @@
       --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+    /* critical: prevent all zoom on mobile */
+    html{touch-action:manipulation}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;-webkit-user-select:none;user-select:none}
     body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
     .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
     .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .top-right{display:flex;align-items:center;gap:.6rem}
     .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
     .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
     .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1rem;width:100%}
@@ -25,16 +30,33 @@
     .stats{display:flex;gap:2.5rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
     .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
     .stat-val{font-size:.8rem;color:var(--accent)}
-    #gameCanvas{border:2px solid #ffe44e44;border-radius:8px;box-shadow:0 0 30px #ffe44e22;background:#000;display:block;max-width:100%;cursor:pointer}
-    .msg{font-family:var(--font-px);font-size:.55rem;color:var(--muted);letter-spacing:2px;min-height:1.8em;text-align:center;line-height:1.8}
+
+    #gameWrap{position:relative;width:320px;max-width:100%}
+    #gameCanvas{
+      border:2px solid #ffe44e44;border-radius:8px;
+      box-shadow:0 0 30px #ffe44e22;background:#000;
+      display:block;width:100%;max-width:320px;
+      /* prevent context menu on long press */
+      -webkit-touch-callout:none;
+    }
+
+    /* overlay shown on game over / start */
+    #overlay{
+      position:absolute;inset:0;border-radius:8px;
+      background:rgba(0,0,0,.72);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+    }
+    #overlay.hidden{display:none}
+    .ov-title{font-family:var(--font-px);font-size:.65rem;color:var(--accent);text-shadow:0 0 12px var(--accent);text-align:center;letter-spacing:2px;line-height:1.8}
+    .ov-score{font-family:var(--font-px);font-size:1.4rem;color:#fff}
+    .ov-btn{font-family:var(--font-px);font-size:.5rem;letter-spacing:2px;padding:.7rem 1.6rem;border:2px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+    .ov-btn:hover,.ov-btn:active{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+
     .controls{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
-    .btn{font-family:var(--font-px);font-size:.48rem;letter-spacing:2px;padding:.65rem 1.3rem;border:2px solid;border-radius:8px;cursor:pointer;background:transparent;transition:all .2s}
-    .btn-start{color:var(--accent);border-color:var(--accent)}
-    .btn-start:hover{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
-    .btn-reset{color:var(--bad);border-color:var(--bad)}
-    .btn-reset:hover{background:var(--bad);color:#fff;box-shadow:0 0 20px var(--bad)}
-    .tap-btn{font-family:var(--font-px);font-size:.6rem;letter-spacing:2px;padding:1rem 2.5rem;border:2px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;margin-top:.5rem}
-    .tap-btn:active{background:#ffe44e33}
+    .btn{font-family:var(--font-px);font-size:.48rem;letter-spacing:2px;padding:.65rem 1.3rem;border:2px solid;border-radius:8px;cursor:pointer;background:transparent;transition:all .2s;-webkit-tap-highlight-color:transparent}
+    .btn-tap{color:var(--accent);border-color:var(--accent);font-size:.65rem;padding:1rem 2.5rem}
+    .btn-tap:hover,.btn-tap:active{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+
     .tips{font-family:var(--font-px);font-size:.42rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
     .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
   </style>
@@ -42,7 +64,10 @@
 <body>
   <div class="top-bar">
     <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-    <a href="index.html" class="back-btn">← RETOUR</a>
+    <div class="top-right">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
   </div>
 
   <div class="game-area">
@@ -53,217 +78,264 @@
       <div><span class="stat-label">NIVEAU</span><span class="stat-val" id="levelEl">1</span></div>
     </div>
 
-    <canvas id="gameCanvas" width="320" height="480"></canvas>
-    <p class="msg" id="msgEl">CLIQUE / ESPACE / TAP POUR COMMENCER</p>
-
-    <div class="controls">
-      <button class="btn btn-reset" id="resetBtn">↺ RESET</button>
+    <div id="gameWrap">
+      <canvas id="gameCanvas" width="320" height="480"></canvas>
+      <!-- Overlay for start / game over -->
+      <div id="overlay">
+        <div class="ov-title" id="ovTitle">🐤 FLAPPY BIRD</div>
+        <div class="ov-score" id="ovScore" style="display:none"></div>
+        <button class="ov-btn" id="ovBtn">▶ JOUER</button>
+      </div>
     </div>
-    <button class="tap-btn" id="tapBtn">TAP !</button>
-    <p class="tips">ESPACE · CLIC · TAP — tout fonctionne !</p>
+
+    <!-- Big tap button for mobile -->
+    <button class="btn btn-tap" id="tapBtn" style="margin-top:.5rem">TAP !</button>
+
+    <p class="tips">
+      ESPACE · CLIC · TAP → SAUTER<br>
+      DOUBLE TAP DÉSACTIVÉ — pas de zoom accidentel
+    </p>
   </div>
 
   <div class="divider"></div>
   <div class="bottom-sections" id="bottomSections"></div>
 
   <script>
+  /* =====================
+     FLAPPY BIRD — game.js
+     ===================== */
   (function(){
-    const canvas = document.getElementById('gameCanvas');
-    const ctx    = canvas.getContext('2d');
+    const canvas  = document.getElementById('gameCanvas');
+    const ctx     = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const ovTitle = document.getElementById('ovTitle');
+    const ovScore = document.getElementById('ovScore');
+    const ovBtn   = document.getElementById('ovBtn');
     const W = canvas.width, H = canvas.height;
-    const msgEl = document.getElementById('msgEl');
 
+    /* ── Constants ── */
     const PIPE_W    = 52;
-    const PIPE_GAP  = 150;
-    const PIPE_SPEED_BASE = 2.2;
-    const GRAVITY   = 0.28;
-    const FLAP      = -6.5;
+    const PIPE_GAP  = 145;
+    const GRAVITY   = 0.27;
+    const FLAP_V    = -6.2;
     const BIRD_R    = 14;
 
-    let bird, pipes, score, best, level, running, rafId, frameCount, lastPipe;
+    /* ── State ── */
+    let bird, pipes, score, best, level, running, rafId, frame;
     let bgStars = [];
+    for(let i=0;i<55;i++) bgStars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+.4,phase:Math.random()*Math.PI*2});
 
-    /* ── Stars BG ── */
-    for(let i=0; i<60; i++) bgStars.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.5+.5, s: Math.random()*.5+.2 });
-
+    /* ── Init / Reset ── */
     function init() {
-      bird = { x: 70, y: H/2, vy: 0, rot: 0, alive: true, frame: 0 };
+      bird  = { x:72, y:H/2, vy:0, rot:0 };
       pipes = [];
-      score = 0; level = 1; frameCount = 0; lastPipe = 0;
-      best = parseInt(localStorage.getItem('flappyBest') || '0');
+      score = 0; level = 1; frame = 0;
+      best  = parseInt(localStorage.getItem('flappyBest')||'0');
       running = false;
       cancelAnimationFrame(rafId);
       updateUI();
-      draw();
-      msgEl.textContent = 'CLIQUE / ESPACE / TAP POUR COMMENCER';
-      msgEl.style.color = '';
+      draw(); // draw first frame (bird visible)
     }
 
+    function showOverlay(title, scoreVal, btnLabel) {
+      ovTitle.innerHTML  = title;
+      ovScore.style.display = scoreVal !== null ? 'block' : 'none';
+      if (scoreVal !== null) ovScore.textContent = 'SCORE : ' + scoreVal;
+      ovBtn.textContent  = btnLabel;
+      overlay.classList.remove('hidden');
+    }
+
+    function hideOverlay() { overlay.classList.add('hidden'); }
+
+    /* ── Flap ── */
     function flap() {
-      if (!bird.alive) { init(); return; }
-      if (!running) { running = true; msgEl.textContent = ''; }
-      bird.vy = FLAP;
+      if (!running) return; // handled by overlay button
+      bird.vy = FLAP_V;
     }
 
+    /* ── Pipe speed ── */
+    function pipeSpeed() { return 2.0 + (level-1)*0.25; }
+
+    /* ── Spawn pipe ── */
     function spawnPipe() {
-      const minTop = 60, maxTop = H - PIPE_GAP - 60;
-      const top = Math.floor(Math.random() * (maxTop - minTop)) + minTop;
-      pipes.push({ x: W + 10, top, scored: false });
+      const minTop = 55, maxTop = H - PIPE_GAP - 55;
+      const top = Math.floor(Math.random()*(maxTop-minTop))+minTop;
+      pipes.push({ x: W+12, top, scored: false });
     }
 
-    function pipeSpeed() { return PIPE_SPEED_BASE + (level - 1) * 0.3; }
+    /* ── Update ── */
+    function update() {
+      frame++;
+      bird.vy  += GRAVITY;
+      bird.y   += bird.vy;
+      bird.rot  = Math.min(Math.max(bird.vy*0.07, -0.45), 1.3);
 
+      // Spawn pipes
+      const interval = Math.max(65, 105 - (level-1)*5);
+      if (frame % interval === 0) spawnPipe();
+
+      // Move pipes + score
+      const sp = pipeSpeed();
+      for (let i = pipes.length-1; i >= 0; i--) {
+        pipes[i].x -= sp;
+        if (!pipes[i].scored && pipes[i].x + PIPE_W < bird.x) {
+          pipes[i].scored = true;
+          score++;
+          if (score > 0 && score % 10 === 0) level++;
+          updateUI();
+        }
+        if (pipes[i].x + PIPE_W < -20) pipes.splice(i, 1);
+      }
+
+      // Ceiling / floor
+      if (bird.y - BIRD_R < 0 || bird.y + BIRD_R > H - 28) return doGameOver();
+
+      // Pipe collision
+      for (const p of pipes) {
+        const inX = bird.x + BIRD_R - 5 > p.x && bird.x - BIRD_R + 5 < p.x + PIPE_W;
+        const inY = bird.y - BIRD_R + 5 < p.top || bird.y + BIRD_R - 5 > p.top + PIPE_GAP;
+        if (inX && inY) return doGameOver();
+      }
+    }
+
+    /* ── Game over ── */
+    function doGameOver() {
+      running = false;
+      cancelAnimationFrame(rafId);
+      if (score > best) { best = score; localStorage.setItem('flappyBest', best); }
+      updateUI();
+      showOverlay('💥 GAME OVER', score, '↺ REJOUER');
+      if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+    }
+
+    /* ── Draw ── */
+    function draw() {
+      // Sky gradient
+      const sky = ctx.createLinearGradient(0,0,0,H);
+      sky.addColorStop(0,'#05051a'); sky.addColorStop(1,'#0a1a2a');
+      ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
+
+      // Stars
+      const t = Date.now();
+      bgStars.forEach(s => {
+        const a = 0.4 + 0.35*Math.sin(t/700 + s.phase);
+        ctx.fillStyle = `rgba(200,210,255,${a})`;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      });
+
+      // Ground
+      ctx.fillStyle='#1a3a0a'; ctx.fillRect(0,H-28,W,28);
+      ctx.fillStyle='#2a5a15'; ctx.fillRect(0,H-28,W,7);
+
+      // Pipes
+      pipes.forEach(p => {
+        // top pipe body
+        ctx.fillStyle='#1a8a1a'; ctx.shadowColor='#00ff44'; ctx.shadowBlur=6;
+        ctx.fillRect(p.x,0,PIPE_W,p.top);
+        ctx.fillStyle='#2aaa2a';
+        ctx.fillRect(p.x-5,p.top-18,PIPE_W+10,18);
+        // bottom pipe body
+        ctx.fillStyle='#1a8a1a';
+        ctx.fillRect(p.x,p.top+PIPE_GAP,PIPE_W,H-p.top-PIPE_GAP-28);
+        ctx.fillStyle='#2aaa2a';
+        ctx.fillRect(p.x-5,p.top+PIPE_GAP,PIPE_W+10,18);
+        ctx.shadowBlur=0;
+      });
+
+      // Bird
+      ctx.save();
+      ctx.translate(bird.x, bird.y);
+      ctx.rotate(bird.rot);
+      // shadow glow
+      ctx.shadowColor='#ffe44e'; ctx.shadowBlur=12;
+      // body
+      ctx.fillStyle='#ffe44e';
+      ctx.beginPath(); ctx.ellipse(0,0,BIRD_R,BIRD_R-2,0,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0;
+      // wing
+      const wOff = running ? Math.sin(frame*0.28)*5 : 0;
+      ctx.fillStyle='#ffcc00';
+      ctx.beginPath(); ctx.ellipse(-4,wOff,9,5,-0.3,0,Math.PI*2); ctx.fill();
+      // eye
+      ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(7,-4,4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(8,-5,1.5,0,Math.PI*2); ctx.fill();
+      // beak
+      ctx.fillStyle='#ff9900';
+      ctx.beginPath(); ctx.moveTo(BIRD_R,0); ctx.lineTo(BIRD_R+8,-3); ctx.lineTo(BIRD_R+8,3); ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // HUD score (only when running)
+      if (running) {
+        ctx.fillStyle='#fff'; ctx.shadowColor='#000'; ctx.shadowBlur=5;
+        ctx.font='bold 26px "Press Start 2P",monospace';
+        ctx.textAlign='center';
+        ctx.fillText(score, W/2, 48);
+        ctx.shadowBlur=0; ctx.textAlign='left';
+      }
+    }
+
+    /* ── RAF loop ── */
+    function loop() {
+      rafId = requestAnimationFrame(loop);
+      if (running) update();
+      draw();
+    }
+
+    /* ── UI ── */
     function updateUI() {
       document.getElementById('scoreEl').textContent = score;
       document.getElementById('bestEl').textContent  = best;
       document.getElementById('levelEl').textContent = level;
     }
 
-    function gameOver() {
-      running = false;
-      if (score > best) { best = score; localStorage.setItem('flappyBest', best); }
-      msgEl.textContent = `GAME OVER — SCORE ${score} — TAP POUR REJOUER`;
-      msgEl.style.color = '#ff3c3c';
-      updateUI();
-      if (window.PixelWave && window.PixelWave.submitScore)     window.PixelWave.submitScore(score);
-      if (window.PixelWave && window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
-    }
+    /* ── Overlay button ── */
+    ovBtn.addEventListener('click', startGame);
+    ovBtn.addEventListener('touchend', e => { e.preventDefault(); startGame(); });
 
-    /* ── Draw ── */
-    function draw() {
-      ctx.fillStyle = '#05051a';
-      ctx.fillRect(0, 0, W, H);
-
-      // Stars
-      bgStars.forEach(s => {
-        const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 700 + s.x);
-        ctx.fillStyle = `rgba(200,200,255,${pulse * 0.7})`;
-        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
-      });
-
-      // Ground
-      ctx.fillStyle = '#1a3a0a';
-      ctx.fillRect(0, H - 30, W, 30);
-      ctx.fillStyle = '#2a5a15';
-      ctx.fillRect(0, H - 30, W, 6);
-
-      // Pipes
-      const pSpeed = pipeSpeed();
-      pipes.forEach(p => {
-        if (running) p.x -= pSpeed;
-
-        // Top pipe
-        ctx.fillStyle = '#1a8a1a';
-        ctx.shadowColor = '#00ff44'; ctx.shadowBlur = 8;
-        ctx.fillRect(p.x, 0, PIPE_W, p.top);
-        // Pipe cap
-        ctx.fillStyle = '#2aaa2a';
-        ctx.fillRect(p.x - 4, p.top - 16, PIPE_W + 8, 16);
-
-        // Bottom pipe
-        ctx.fillStyle = '#1a8a1a';
-        ctx.fillRect(p.x, p.top + PIPE_GAP, PIPE_W, H - p.top - PIPE_GAP - 30);
-        ctx.fillStyle = '#2aaa2a';
-        ctx.fillRect(p.x - 4, p.top + PIPE_GAP, PIPE_W + 8, 16);
-        ctx.shadowBlur = 0;
-
-        // Score
-        if (!p.scored && p.x + PIPE_W < bird.x) {
-          p.scored = true; score++;
-          if (score % 10 === 0) level++;
-          updateUI();
-        }
-      });
-
-      // Bird
-      const bx = bird.x, by = bird.y;
-      ctx.save();
-      ctx.translate(bx, by);
-      ctx.rotate(Math.min(Math.max(bird.rot, -0.4), 1.2));
-
-      // Body
-      ctx.fillStyle = '#ffe44e'; ctx.shadowColor = '#ffe44e'; ctx.shadowBlur = 10;
-      ctx.beginPath(); ctx.ellipse(0, 0, BIRD_R, BIRD_R - 2, 0, 0, Math.PI*2); ctx.fill();
-
-      // Wing flap
-      const wingOff = running ? Math.sin(frameCount * 0.3) * 5 : 0;
-      ctx.fillStyle = '#ffcc00';
-      ctx.beginPath(); ctx.ellipse(-4, wingOff, 9, 5, -0.3, 0, Math.PI*2); ctx.fill();
-
-      // Eye
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#000';
-      ctx.beginPath(); ctx.arc(7, -4, 4, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(8, -5, 1.5, 0, Math.PI*2); ctx.fill();
-
-      // Beak
-      ctx.fillStyle = '#ff9900';
-      ctx.beginPath(); ctx.moveTo(BIRD_R, 0); ctx.lineTo(BIRD_R+8, -3); ctx.lineTo(BIRD_R+8, 3); ctx.closePath(); ctx.fill();
-      ctx.restore();
-
-      // HUD score
-      ctx.fillStyle = '#fff';
-      ctx.shadowColor = '#000'; ctx.shadowBlur = 6;
-      ctx.font = 'bold 28px "Press Start 2P", monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(score, W/2, 50);
-      ctx.shadowBlur = 0;
-      ctx.textAlign = 'left';
-
-      if (!bird.alive) {
-        ctx.fillStyle = 'rgba(255,0,0,.25)';
-        ctx.fillRect(0, 0, W, H);
-      }
-    }
-
-    /* ── Loop ── */
-    function loop() {
+    function startGame() {
+      init();
+      hideOverlay();
+      running = true;
       rafId = requestAnimationFrame(loop);
-      frameCount++;
-
-      if (running && bird.alive) {
-        bird.vy += GRAVITY;
-        bird.y  += bird.vy;
-        bird.rot = bird.vy * 0.07;
-        bird.frame++;
-
-        // Spawn pipes
-        if (frameCount - lastPipe > Math.max(70, 110 - (level-1)*5)) {
-          spawnPipe(); lastPipe = frameCount;
-        }
-
-        // Remove off-screen pipes
-        pipes = pipes.filter(p => p.x + PIPE_W > -10);
-
-        // Collisions
-        if (bird.y - BIRD_R < 0 || bird.y + BIRD_R > H - 30) { bird.alive = false; gameOver(); }
-
-        pipes.forEach(p => {
-          const inX = bird.x + BIRD_R - 4 > p.x && bird.x - BIRD_R + 4 < p.x + PIPE_W;
-          const inY = bird.y - BIRD_R + 4 < p.top || bird.y + BIRD_R - 4 > p.top + PIPE_GAP;
-          if (inX && inY) { bird.alive = false; gameOver(); }
-        });
-      }
-
-      draw();
     }
 
-    /* ── Input ── */
-    canvas.addEventListener('click', flap);
-    document.getElementById('tapBtn').addEventListener('click', flap);
-    document.addEventListener('keydown', e => { if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flap(); } });
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); flap(); }, { passive: false });
-    document.getElementById('resetBtn').addEventListener('click', init);
+    /* ── Input — single unified handler ── */
+    let lastTap = 0;
+    function handleInput(e) {
+      // Block double-tap zoom
+      const now = Date.now();
+      if (now - lastTap < 300) { e.preventDefault(); }
+      lastTap = now;
+      if (!overlay.classList.contains('hidden')) return; // overlay is open
+      flap();
+    }
 
+    // Canvas tap/click
+    canvas.addEventListener('pointerdown', handleInput, { passive: false });
+    // Big tap button
+    document.getElementById('tapBtn').addEventListener('pointerdown', handleInput, { passive: false });
+    // Keyboard
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        if (!overlay.classList.contains('hidden')) return;
+        flap();
+      }
+    });
+
+    /* ── Start ── */
     init();
+    showOverlay('🐤 FLAPPY BIRD<br><br><span style="font-size:.45rem;color:#7070a0">PASSE ENTRE LES TUYAUX !</span>', null, '▶ JOUER');
     rafId = requestAnimationFrame(loop);
   })();
   </script>
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => { window.PixelWave.init('flappy', '#ffe44e'); });
+    window.addEventListener('DOMContentLoaded', () => {
+      window.PixelWave.init('flappy', '#ffe44e');
+      window.PixelWave.initFullscreen('gameWrap', 'fsBtn');
+    });
   </script>
 </body>
 </html>
