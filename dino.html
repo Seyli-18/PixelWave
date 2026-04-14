@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>PixelWave — Dino Runner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    :root{
+      --bg:#0a0a1a;--accent:#00ff88;--bad:#ff3c3c;
+      --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
+      --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{touch-action:manipulation}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .top-right{display:flex;align-items:center;gap:.6rem}
+    .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
+    .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
+    .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1rem;width:100%}
+    h1{font-family:var(--font-px);font-size:.8rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px}
+    .stats{display:flex;gap:2rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
+    .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
+    .stat-val{font-size:.8rem;color:var(--accent)}
+    #gameWrap{position:relative;width:480px;max-width:100%}
+    #gameCanvas{border:2px solid #00ff8833;border-radius:8px;box-shadow:0 0 30px #00ff8811;background:#000;display:block;width:100%;-webkit-touch-callout:none}
+    #overlay{position:absolute;inset:0;border-radius:8px;background:rgba(0,0,0,.75);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    #overlay.hidden{display:none}
+    .ov-title{font-family:var(--font-px);font-size:.6rem;color:var(--accent);text-shadow:0 0 12px var(--accent);text-align:center;letter-spacing:2px;line-height:2}
+    .ov-score{font-family:var(--font-px);font-size:1.3rem;color:#fff}
+    .ov-btn{font-family:var(--font-px);font-size:.5rem;letter-spacing:2px;padding:.7rem 1.6rem;border:2px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+    .ov-btn:hover,.ov-btn:active{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+    .tap-area{width:100%;max-width:480px;height:56px;background:#12122a;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s;margin-top:.3rem}
+    .tap-area:active{background:#00ff8822}
+    .tap-label{font-family:var(--font-px);font-size:.48rem;color:var(--muted);letter-spacing:2px;pointer-events:none}
+    .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
+    .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div class="top-right">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>🦕 DINO RUNNER</h1>
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">VITESSE</span><span class="stat-val" id="speedEl">1x</span></div>
+    </div>
+
+    <div id="gameWrap">
+      <canvas id="gameCanvas" width="480" height="200"></canvas>
+      <div id="overlay">
+        <div class="ov-title" id="ovTitle">🦕 DINO RUNNER</div>
+        <div class="ov-score" id="ovScore" style="display:none"></div>
+        <button class="ov-btn" id="ovBtn">▶ JOUER</button>
+      </div>
+    </div>
+
+    <div class="tap-area" id="tapArea"><span class="tap-label">TAP / ESPACE → SAUTER</span></div>
+    <p class="tips">ESPACE · FLÈCHE HAUT · TAP → SAUTER &nbsp;|&nbsp; ↓ BAISSER LA TÊTE</p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script>
+  (function(){
+    const canvas  = document.getElementById('gameCanvas');
+    const ctx     = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const GROUND  = H - 35;
+
+    /* ── Dino drawing helper ── */
+    const DINO_W=28, DINO_H=38, DINO_DUCK_H=22;
+
+    /* ── State ── */
+    let dino, obs, clouds, score, best, speed, running, rafId, frame;
+    let ducking = false;
+
+    function init() {
+      dino   = { x:60, y:GROUND-DINO_H, vy:0, onGround:true, animFrame:0 };
+      obs    = [];
+      clouds = [];
+      score  = 0;
+      best   = parseInt(localStorage.getItem('dinoBest')||'0');
+      speed  = 4.5;
+      frame  = 0;
+      running= false;
+      ducking= false;
+      updateUI();
+      draw();
+    }
+
+    function jump() {
+      if(!running) return;
+      if(dino.onGround) { dino.vy = -13; dino.onGround = false; }
+    }
+    function duckStart() { ducking = true; }
+    function duckEnd()   { ducking = false; }
+
+    /* ── Spawn obstacle ── */
+    function spawnObs() {
+      const type = Math.random() < 0.25 ? 'bird' : 'cactus';
+      if (type==='cactus') {
+        const tall = Math.random() < 0.4;
+        const n    = Math.floor(Math.random()*2)+1;
+        obs.push({ type:'cactus', x:W+20, w:n*18+2, h:tall?52:36, y:GROUND-(tall?52:36) });
+      } else {
+        const birdY = GROUND - 30 - Math.floor(Math.random()*50);
+        obs.push({ type:'bird', x:W+20, w:36, h:18, y:birdY, wingUp:true, wingTimer:0 });
+      }
+    }
+
+    /* ── Cloud ── */
+    function spawnCloud() {
+      clouds.push({ x:W+20, y:20+Math.random()*50, w:60+Math.random()*40 });
+    }
+
+    /* ── Update ── */
+    function update() {
+      frame++;
+      score++;
+      speed = 4.5 + score/500;
+
+      // Dino physics
+      const dH = (ducking && dino.onGround) ? DINO_DUCK_H : DINO_H;
+      if (!dino.onGround) {
+        dino.vy += 0.7;
+        dino.y  += dino.vy;
+      }
+      const groundY = GROUND - dH;
+      if (dino.y >= groundY) {
+        dino.y = groundY; dino.vy = 0; dino.onGround = true;
+      }
+      dino.animFrame = Math.floor(frame/8)%2;
+
+      // Spawn
+      const spawnRate = Math.max(40, 90 - score/100);
+      if (frame % Math.round(spawnRate) === 0) spawnObs();
+      if (frame % 80 === 0) spawnCloud();
+
+      // Move obs
+      for (let i=obs.length-1;i>=0;i--) {
+        obs[i].x -= speed;
+        if (obs[i].type==='bird') {
+          obs[i].wingTimer++;
+          if(obs[i].wingTimer%12===0) obs[i].wingUp=!obs[i].wingUp;
+        }
+        if (obs[i].x + obs[i].w < -10) { obs.splice(i,1); continue; }
+
+        // Collision
+        const dW = DINO_W;
+        const dH2 = (ducking && dino.onGround) ? DINO_DUCK_H : DINO_H;
+        const dY  = dino.y;
+        const margin = 5;
+        if (dino.x + dW - margin > obs[i].x + margin &&
+            dino.x + margin < obs[i].x + obs[i].w - margin &&
+            dY + dH2 - margin > obs[i].y + margin &&
+            dY + margin < obs[i].y + obs[i].h - margin) {
+          return die();
+        }
+      }
+
+      // Move clouds
+      for(let i=clouds.length-1;i>=0;i--){
+        clouds[i].x -= speed*0.3;
+        if(clouds[i].x+clouds[i].w<-10) clouds.splice(i,1);
+      }
+
+      if(score>best){best=score;localStorage.setItem('dinoBest',best);}
+      updateUI();
+    }
+
+    /* ── Die ── */
+    function die() {
+      running = false;
+      cancelAnimationFrame(rafId);
+      updateUI();
+      const ovScore = document.getElementById('ovScore');
+      ovScore.textContent = 'SCORE : ' + score;
+      ovScore.style.display = 'block';
+      document.getElementById('ovTitle').textContent = '💀 GAME OVER !';
+      document.getElementById('ovBtn').textContent   = '↺ REJOUER';
+      document.getElementById('overlay').classList.remove('hidden');
+      if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+    }
+
+    /* ── Draw ── */
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#050510'; ctx.fillRect(0,0,W,H);
+
+      // Stars (static)
+      ctx.fillStyle='rgba(200,200,255,.35)';
+      for(let i=0;i<30;i++){
+        ctx.beginPath();
+        ctx.arc(((i*137+50)%W), ((i*79+20)%60), .8,0,Math.PI*2); ctx.fill();
+      }
+
+      // Clouds
+      clouds.forEach(c=>{
+        ctx.fillStyle='rgba(255,255,255,.08)';
+        ctx.beginPath(); ctx.ellipse(c.x+c.w/2,c.y,c.w/2,12,0,0,Math.PI*2); ctx.fill();
+      });
+
+      // Ground line
+      ctx.strokeStyle='#00ff8866'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(0,GROUND); ctx.lineTo(W,GROUND); ctx.stroke();
+      // Ground dots
+      ctx.fillStyle='#00ff8833';
+      for(let x=(frame*speed%20);x<W;x+=20){ ctx.fillRect(x,GROUND+3,10,2); }
+
+      // Obstacles
+      obs.forEach(o=>{
+        if(o.type==='cactus'){
+          ctx.fillStyle='#00ff88'; ctx.shadowColor='#00ff88'; ctx.shadowBlur=8;
+          ctx.fillRect(o.x+(o.w/2)-6,o.y,12,o.h);
+          // arms
+          ctx.fillRect(o.x,o.y+10,o.w,8);
+          ctx.shadowBlur=0;
+        } else {
+          // bird
+          ctx.fillStyle='#ff3cac'; ctx.shadowColor='#ff3cac'; ctx.shadowBlur=8;
+          ctx.fillRect(o.x+5,o.y+5,26,8); // body
+          // wings
+          ctx.fillStyle='#ff3cac';
+          if(o.wingUp){
+            ctx.fillRect(o.x+8,o.y-4,18,8); // up
+          } else {
+            ctx.fillRect(o.x+8,o.y+12,18,7); // down
+          }
+          ctx.shadowBlur=0;
+        }
+      });
+
+      // Dino
+      const dH = (ducking && dino.onGround) ? DINO_DUCK_H : DINO_H;
+      ctx.fillStyle='#00ff88'; ctx.shadowColor='#00ff88'; ctx.shadowBlur=10;
+      if(ducking && dino.onGround){
+        // Ducked body
+        ctx.fillRect(dino.x, dino.y, DINO_W+10, dH);
+        ctx.fillStyle='#0a0a1a'; ctx.fillRect(dino.x+22,dino.y+4,8,8); // eye area
+        ctx.fillStyle='#00ff88'; ctx.fillRect(dino.x+24,dino.y+6,4,4); // eye
+      } else {
+        // Body
+        ctx.fillRect(dino.x+4,dino.y+10,DINO_W-4,DINO_H-10);
+        // Head
+        ctx.fillRect(dino.x+8,dino.y,DINO_W-4,16);
+        // Eye
+        ctx.fillStyle='#0a0a1a'; ctx.fillRect(dino.x+18,dino.y+3,8,8);
+        ctx.fillStyle='#00ff88'; ctx.fillRect(dino.x+20,dino.y+5,4,4);
+        // Legs (animate)
+        if(dino.onGround){
+          if(dino.animFrame===0){
+            ctx.fillStyle='#00ff88';
+            ctx.fillRect(dino.x+6, dino.y+DINO_H-10, 8,10);
+            ctx.fillRect(dino.x+16,dino.y+DINO_H-5, 8,5);
+          } else {
+            ctx.fillRect(dino.x+6, dino.y+DINO_H-5, 8,5);
+            ctx.fillRect(dino.x+16,dino.y+DINO_H-10, 8,10);
+          }
+        } else {
+          ctx.fillRect(dino.x+6, dino.y+DINO_H-8, 8,8);
+          ctx.fillRect(dino.x+16,dino.y+DINO_H-8, 8,8);
+        }
+      }
+      ctx.shadowBlur=0;
+
+      // Score HUD
+      if(running){
+        ctx.fillStyle='rgba(0,255,136,.7)';
+        ctx.font='10px "Press Start 2P",monospace';
+        ctx.textAlign='right';
+        ctx.fillText(String(score).padStart(5,'0'), W-10, 22);
+        ctx.textAlign='left';
+      }
+    }
+
+    /* ── Loop ── */
+    function loop(){
+      rafId=requestAnimationFrame(loop);
+      if(running) update();
+      draw();
+    }
+
+    function updateUI(){
+      document.getElementById('scoreEl').textContent = score;
+      document.getElementById('bestEl').textContent  = best;
+      document.getElementById('speedEl').textContent = speed.toFixed(1)+'x';
+    }
+
+    /* ── Start ── */
+    const ovBtn = document.getElementById('ovBtn');
+    function startGame(){
+      init();
+      document.getElementById('overlay').classList.add('hidden');
+      running=true; rafId=requestAnimationFrame(loop);
+    }
+    ovBtn.addEventListener('click',    startGame);
+    ovBtn.addEventListener('touchend', e=>{e.preventDefault();startGame();});
+
+    /* ── Input ── */
+    let lastTap=0;
+    function handleJump(e){
+      const now=Date.now();
+      if(now-lastTap<300){e.preventDefault();return;}
+      lastTap=now;
+      if(!document.getElementById('overlay').classList.contains('hidden')) return;
+      jump();
+    }
+    canvas.addEventListener('pointerdown', handleJump, {passive:false});
+    document.getElementById('tapArea').addEventListener('pointerdown', handleJump, {passive:false});
+    document.addEventListener('keydown',e=>{
+      if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();jump();}
+      if(e.code==='ArrowDown') duckStart();
+    });
+    document.addEventListener('keyup',e=>{ if(e.code==='ArrowDown') duckEnd(); });
+
+    init();
+    loop();
+  })();
+  </script>
+
+  <script src="shared.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded',()=>{
+      window.PixelWave.initFullscreen('gameWrap','fsBtn');
+      window.PixelWave.init('dino','#00ff88');
+    });
+  </script>
+</body>
+</html>
