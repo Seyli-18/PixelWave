@@ -8,65 +8,79 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root{--bg:#0a0a1a;--card:#0f0f26;--border:#1e1e4a;--accent:#ff3cac;--good:#00ff88;--text:#e8e8ff;--muted:#7070a0;--font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif}
+    [data-theme="light"]{--bg:#eeeeff;--card:#fff;--border:#d0d0e0;--text:#1a1a3a;--muted:#5050a0}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
-    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
-    body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,240,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;transition:background .3s,color .3s}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100;gap:.75rem;flex-wrap:wrap}
     .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .top-right{display:flex;align-items:center;gap:.6rem}
     .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
     .back-btn:hover{color:#00f0ff;border-color:#00f0ff}
-    .page-wrap{position:relative;z-index:1;width:100%;max-width:600px;padding:2.5rem 1.5rem 5rem;display:flex;flex-direction:column;gap:2rem}
-    h1{font-family:var(--font-px);font-size:.75rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px;text-align:center;line-height:1.8}
+    .page-wrap{position:relative;z-index:1;width:100%;max-width:640px;padding:2.5rem 1.5rem 5rem;display:flex;flex-direction:column;gap:2rem}
+    h1{font-family:var(--font-px);font-size:.7rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px;text-align:center;line-height:1.8}
     .intro{font-size:1rem;color:var(--muted);text-align:center;line-height:1.6}
-    .form-card,.bug-list-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-    .form-section{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border)}
-    .form-section:last-child{border-bottom:none}
-    .form-label{font-family:var(--font-px);font-size:.45rem;color:var(--muted);letter-spacing:2px;display:block;margin-bottom:.7rem}
-    .form-input,.form-select,.form-textarea{width:100%;background:#0a0a1a;border:1px solid var(--border);border-radius:8px;padding:.6rem .9rem;color:var(--text);font-family:var(--font-b);font-size:1rem;font-weight:600;outline:none;transition:border-color .2s}
-    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 10px #ff3cac22}
-    .form-input::placeholder,.form-textarea::placeholder{color:#3a3a60}
-    .form-select{cursor:pointer;appearance:none}
-    .form-select option{background:#0f0f26}
-    .form-textarea{resize:vertical;min-height:90px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .card-header{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);font-family:var(--font-px);font-size:.5rem;color:var(--muted);letter-spacing:2px;display:flex;align-items:center;justify-content:space-between}
+    .sec{padding:1.2rem 1.4rem;border-bottom:1px solid var(--border)}
+    .sec:last-child{border-bottom:none}
+    .lbl{font-family:var(--font-px);font-size:.42rem;color:var(--muted);letter-spacing:2px;display:block;margin-bottom:.6rem}
+    input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.6rem .9rem;color:var(--text);font-family:var(--font-b);font-size:1rem;font-weight:600;outline:none;transition:border-color .2s}
+    input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 8px #ff3cac22}
+    input::placeholder,textarea::placeholder{color:var(--muted);opacity:.6}
+    select{cursor:pointer;appearance:none}
+    select option{background:var(--card)}
+    textarea{resize:vertical;min-height:90px}
     .sev-row{display:flex;gap:.6rem;flex-wrap:wrap}
     .sev-btn{font-family:var(--font-px);font-size:.38rem;letter-spacing:1px;padding:.4rem .8rem;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
-    .sev-btn.s1.active{border-color:#ffe44e;color:#ffe44e}
-    .sev-btn.s2.active{border-color:#ff9900;color:#ff9900}
-    .sev-btn.s3.active{border-color:#ff3c3c;color:#ff3c3c}
-    .sev-btn.s4.active{border-color:#ff3cac;color:#ff3cac;box-shadow:0 0 10px #ff3cac44}
+    .sev-btn.s1.active,.sev-btn.s1:hover{border-color:#ffe44e;color:#ffe44e}
+    .sev-btn.s2.active,.sev-btn.s2:hover{border-color:#ff9900;color:#ff9900}
+    .sev-btn.s3.active,.sev-btn.s3:hover{border-color:#ff3c3c;color:#ff3c3c}
+    .sev-btn.s4.active,.sev-btn.s4:hover{border-color:#ff3cac;color:#ff3cac}
     .submit-btn{width:100%;font-family:var(--font-px);font-size:.5rem;letter-spacing:2px;padding:.85rem;border:2px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s}
-    .submit-btn:hover{background:var(--accent);color:#fff;box-shadow:0 0 20px var(--accent)}
+    .submit-btn:hover,.submit-btn:active{background:var(--accent);color:#fff;box-shadow:0 0 20px var(--accent)}
     .submit-btn:disabled{opacity:.5;cursor:default}
     .success-card{display:none;background:#00220a;border:1px solid var(--good);border-radius:14px;padding:2rem;text-align:center}
     .success-card.show{display:block}
     .success-icon{font-size:3rem;margin-bottom:.8rem}
     .success-title{font-family:var(--font-px);font-size:.6rem;color:var(--good);letter-spacing:2px;margin-bottom:.8rem}
-    .success-sub{font-size:1rem;color:#7070a0;line-height:1.6;margin-bottom:1.2rem}
-    .bug-list-header{padding:1rem 1.4rem;border-bottom:1px solid var(--border);font-family:var(--font-px);font-size:.5rem;color:var(--muted);letter-spacing:2px}
-    .bug-item{padding:.9rem 1.4rem;border-bottom:1px solid #12122a;display:flex;align-items:flex-start;gap:.8rem}
+    .success-sub{font-size:1rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem}
+    /* Bug list items */
+    .bug-item{padding:.9rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.8rem;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     .bug-item:last-child{border-bottom:none}
-    .bug-sev{font-size:1rem;flex-shrink:0}
-    .bug-game{font-family:var(--font-px);font-size:.38rem;color:var(--muted);letter-spacing:1px;margin-bottom:.3rem}
-    .bug-desc{font-size:.95rem;color:var(--text);line-height:1.4}
-    .bug-status{font-family:var(--font-px);font-size:.36rem;letter-spacing:1px;padding:.2rem .5rem;border-radius:4px;margin-top:.4rem;display:inline-block}
-    .s-open{background:#3a0000;color:#ff6b35}.s-prog{background:#2a1a00;color:#ffe44e}.s-fixed{background:#002200;color:#00ff88}
+    .bug-sev-icon{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+    .bug-game-tag{font-family:var(--font-px);font-size:.36rem;color:var(--muted);letter-spacing:1px;margin-bottom:.25rem}
+    .bug-desc-text{font-size:.95rem;color:var(--text);line-height:1.4;margin-bottom:.3rem}
+    .bug-meta{font-family:var(--font-px);font-size:.35rem;color:#3a3a60;letter-spacing:1px}
+    .status-badge{display:inline-block;font-family:var(--font-px);font-size:.34rem;letter-spacing:1px;padding:.2rem .5rem;border-radius:4px;margin-left:.5rem}
+    .s-open{background:#3a0000;color:#ff6b35}
+    .s-prog{background:#2a1a00;color:#ffe44e}
+    .s-fixed{background:#002200;color:#00ff88}
+    .known-section{padding:.5rem 0}
+    .empty-state{padding:2rem;text-align:center;font-family:var(--font-px);font-size:.45rem;color:var(--muted);letter-spacing:1px}
+    .reports-count{font-family:var(--font-px);font-size:.42rem;color:var(--muted);letter-spacing:1px}
+    .load-more-btn{width:100%;font-family:var(--font-px);font-size:.42rem;letter-spacing:1px;padding:.6rem;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;margin-top:.5rem}
+    .load-more-btn:hover{border-color:#00f0ff;color:#00f0ff}
   </style>
 </head>
 <body>
   <div class="top-bar">
     <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-    <a href="index.html" class="back-btn">← RETOUR</a>
+    <div class="top-right">
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
   </div>
 
   <div class="page-wrap">
     <h1>🐛 SIGNALER UN BUG</h1>
     <p class="intro">Tu as trouvé un problème ? Dis-nous tout ! Chaque rapport nous aide à améliorer PixelWave.</p>
 
-    <div class="form-card" id="formCard">
-      <div class="form-section">
-        <label class="form-label">🎮 JEU CONCERNÉ</label>
-        <select class="form-select" id="bugGame">
+    <!-- ── FORMULAIRE ── -->
+    <div class="card" id="formCard">
+      <div class="sec">
+        <label class="lbl">🎮 JEU CONCERNÉ</label>
+        <select id="bugGame">
           <option value="">-- Choisir --</option>
           <option>Snake</option><option>Pac-Man</option><option>Tetris</option>
           <option>Breakout</option><option>Drapeaux Europe</option><option>Drapeaux Afrique</option>
@@ -75,8 +89,8 @@
           <option>Page d'accueil</option><option>Autre</option>
         </select>
       </div>
-      <div class="form-section">
-        <label class="form-label">⚡ SÉVÉRITÉ</label>
+      <div class="sec">
+        <label class="lbl">⚡ SÉVÉRITÉ</label>
         <div class="sev-row">
           <button class="sev-btn s1" data-s="1">🟡 MINEUR</button>
           <button class="sev-btn s2" data-s="2">🟠 MODÉRÉ</button>
@@ -84,49 +98,75 @@
           <button class="sev-btn s4" data-s="4">💀 CRITIQUE</button>
         </div>
       </div>
-      <div class="form-section">
-        <label class="form-label">📝 DESCRIPTION</label>
-        <textarea class="form-textarea" id="bugDesc" placeholder="Décris ce qui s'est passé et comment reproduire le bug…"></textarea>
+      <div class="sec">
+        <label class="lbl">📝 DESCRIPTION</label>
+        <textarea id="bugDesc" placeholder="Décris ce qui s'est passé et comment reproduire le bug…"></textarea>
       </div>
-      <div class="form-section">
-        <label class="form-label">📱 APPAREIL (OPTIONNEL)</label>
-        <input type="text" class="form-input" id="bugDevice" placeholder="Ex: iPhone 14, Chrome sur Windows…"/>
+      <div class="sec">
+        <label class="lbl">📱 APPAREIL (OPTIONNEL)</label>
+        <input type="text" id="bugDevice" placeholder="Ex: iPhone 14, Chrome sur Windows…"/>
       </div>
-      <div class="form-section">
-        <label class="form-label">👤 PSEUDO (OPTIONNEL)</label>
-        <input type="text" class="form-input" id="bugAuthor" placeholder="Pour te recontacter si besoin"/>
+      <div class="sec">
+        <label class="lbl">👤 PSEUDO (OPTIONNEL)</label>
+        <input type="text" id="bugAuthor" placeholder="Pour te recontacter si besoin"/>
       </div>
-      <div class="form-section">
+      <div class="sec">
         <button class="submit-btn" id="submitBug">🐛 ENVOYER LE RAPPORT</button>
       </div>
     </div>
 
+    <!-- ── SUCCESS ── -->
     <div class="success-card" id="successCard">
       <div class="success-icon">✅</div>
       <div class="success-title">RAPPORT ENVOYÉ !</div>
-      <div class="success-sub">Merci ! On va regarder ça très vite. Continue à jouer en attendant 😄</div>
-      <button class="submit-btn" id="anotherBug" style="width:auto;padding:.6rem 1.5rem;display:inline-block">SIGNALER UN AUTRE BUG</button>
+      <div class="success-sub">Merci ! On va regarder ça très vite 😄</div>
+      <button class="submit-btn" id="anotherBug" style="width:auto;padding:.6rem 1.5rem">SIGNALER UN AUTRE BUG</button>
     </div>
 
-    <div class="bug-list-card">
-      <div class="bug-list-header">📋 BUGS CONNUS &amp; STATUTS</div>
-      <div class="bug-item"><span class="bug-sev">🟡</span><div><div class="bug-game">TOUS LES JEUX</div><div class="bug-desc">Leaderboard lent au premier chargement</div><span class="bug-status s-prog">EN COURS</span></div></div>
-      <div class="bug-item"><span class="bug-sev">✅</span><div><div class="bug-game">PAC-MAN</div><div class="bug-desc">Fantômes traversaient certains murs</div><span class="bug-status s-fixed">CORRIGÉ v3</span></div></div>
-      <div class="bug-item"><span class="bug-sev">✅</span><div><div class="bug-game">FLAPPY BIRD</div><div class="bug-desc">Zoom accidentel au double-tap mobile</div><span class="bug-status s-fixed">CORRIGÉ v3</span></div></div>
-      <div class="bug-item"><span class="bug-sev">✅</span><div><div class="bug-game">LEADERBOARD</div><div class="bug-desc">Scores enregistrés en double (doublon Anonyme)</div><span class="bug-status s-fixed">CORRIGÉ v3</span></div></div>
-      <div class="bug-item"><span class="bug-sev">✅</span><div><div class="bug-game">FLAPPY BIRD</div><div class="bug-desc">Jeu ne se réinitialisait pas après game over</div><span class="bug-status s-fixed">CORRIGÉ v3</span></div></div>
+    <!-- ── RAPPORTS ENVOYÉS PAR LA COMMUNAUTÉ ── -->
+    <div class="card" id="communityCard">
+      <div class="card-header">
+        <span>📨 RAPPORTS DE LA COMMUNAUTÉ</span>
+        <span class="reports-count" id="reportsCount">0 rapport(s)</span>
+      </div>
+      <div id="communityList">
+        <div class="empty-state">CHARGEMENT…</div>
+      </div>
+      <div style="padding:.5rem 1rem 1rem" id="loadMoreWrap" style="display:none">
+        <button class="load-more-btn" id="loadMoreBtn">CHARGER PLUS ↓</button>
+      </div>
+    </div>
+
+    <!-- ── BUGS CONNUS (statuts fixes) ── -->
+    <div class="card">
+      <div class="card-header">📋 BUGS CONNUS &amp; STATUTS</div>
+      <div class="known-section">
+        <div class="bug-item"><span class="bug-sev-icon">🟡</span><div><div class="bug-game-tag">TOUS LES JEUX</div><div class="bug-desc-text">Leaderboard lent au premier chargement (Firebase cold start)</div><span class="status-badge s-prog">EN COURS</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">PAC-MAN</div><div class="bug-desc-text">Fantômes traversaient certains murs</div><span class="status-badge s-fixed">CORRIGÉ v3</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">FLAPPY BIRD</div><div class="bug-desc-text">Zoom accidentel au double-tap sur iPad/mobile</div><span class="status-badge s-fixed">CORRIGÉ v4</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">FLAPPY BIRD</div><div class="bug-desc-text">Jeu ne se réinitialisait pas après game over</div><span class="status-badge s-fixed">CORRIGÉ v3</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">LEADERBOARD</div><div class="bug-desc-text">Scores enregistrés en double (doublon Anonyme)</div><span class="status-badge s-fixed">CORRIGÉ v3</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">GEOMETRY DASH + DINO</div><div class="bug-desc-text">Vitesse trop élevée, obstacles trop difficiles</div><span class="status-badge s-fixed">CORRIGÉ v4</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">PLEIN ÉCRAN</div><div class="bug-desc-text">Swipe pour bouger sortait du mode plein écran</div><span class="status-badge s-fixed">CORRIGÉ v4</span></div></div>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    import { saveReview } from './firebase.js';
+    import { saveReview, getReviews } from './firebase.js';
+
+    /* ── Sévérité ── */
     let selSev = 0;
+    const SEV_ICONS = ['','🟡','🟠','🔴','💀'];
     document.querySelectorAll('.sev-btn').forEach(b => {
       b.addEventListener('click', () => {
         document.querySelectorAll('.sev-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active'); selSev = +b.dataset.s;
+        b.classList.add('active');
+        selSev = +b.dataset.s;
       });
     });
+
+    /* ── Submit ── */
     document.getElementById('submitBug').addEventListener('click', async () => {
       const game   = document.getElementById('bugGame').value;
       const desc   = document.getElementById('bugDesc').value.trim();
@@ -135,26 +175,118 @@
       if (!game)   { alert('Choisis le jeu concerné !'); return; }
       if (!selSev) { alert('Choisis la sévérité !'); return; }
       if (!desc)   { document.getElementById('bugDesc').focus(); return; }
+
       const btn = document.getElementById('submitBug');
       btn.textContent = 'ENVOI…'; btn.disabled = true;
-      const text = `[${game}] Sévérité ${selSev}/4 — ${desc}${device?' | Appareil: '+device:''}`;
-      try { await saveReview('bugs', author, text, selSev); }
-      catch(e) {
-        const k='pw_bugs'; const a=JSON.parse(localStorage.getItem(k)||'[]');
-        a.unshift({game,sev:selSev,desc,device,author,ts:Date.now()});
-        localStorage.setItem(k,JSON.stringify(a.slice(0,50)));
+
+      // On stocke dans reviews/bugs avec le format : [JEU] Sév.N — description
+      const text = '[' + game + '] Sév.' + selSev + '/4 — ' + desc + (device ? ' | Appareil: ' + device : '');
+      try {
+        await saveReview('bugs', author, text, selSev);
+      } catch(e) {
+        // Fallback localStorage
+        const k = 'pw_bugs';
+        const a = JSON.parse(localStorage.getItem(k)||'[]');
+        a.unshift({ game, sev: selSev, desc, device, author, ts: Date.now() });
+        localStorage.setItem(k, JSON.stringify(a.slice(0, 100)));
       }
-      document.getElementById('formCard').style.display='none';
+
+      document.getElementById('formCard').style.display = 'none';
       document.getElementById('successCard').classList.add('show');
-      btn.textContent='🐛 ENVOYER LE RAPPORT'; btn.disabled=false;
+      btn.textContent = '🐛 ENVOYER'; btn.disabled = false;
+
+      // Recharger les rapports
+      loadCommunityReports();
     });
+
     document.getElementById('anotherBug').addEventListener('click', () => {
-      document.getElementById('formCard').style.display='block';
+      document.getElementById('formCard').style.display = 'block';
       document.getElementById('successCard').classList.remove('show');
-      document.getElementById('bugDesc').value='';
-      document.getElementById('bugGame').value='';
-      selSev=0; document.querySelectorAll('.sev-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('bugDesc').value = '';
+      document.getElementById('bugGame').value = '';
+      selSev = 0;
+      document.querySelectorAll('.sev-btn').forEach(b => b.classList.remove('active'));
     });
+
+    /* ── Load community reports from Firebase ── */
+    let allReports = [];
+    let showCount  = 10;
+
+    async function loadCommunityReports() {
+      const list = document.getElementById('communityList');
+      list.innerHTML = '<div class="empty-state">CHARGEMENT…</div>';
+
+      try {
+        allReports = await getReviews('bugs');
+      } catch(e) {
+        // Fallback localStorage
+        try {
+          allReports = JSON.parse(localStorage.getItem('pw_bugs')||'[]').map(b => ({
+            author: b.author || 'Anonyme',
+            text: '['+b.game+'] Sév.'+b.sev+'/4 — '+b.desc+(b.device?' | '+b.device:''),
+            stars: b.sev,
+            ts: b.ts
+          }));
+        } catch { allReports = []; }
+      }
+
+      document.getElementById('reportsCount').textContent = allReports.length + ' rapport(s)';
+      renderReports();
+    }
+
+    function renderReports() {
+      const list = document.getElementById('communityList');
+
+      if (!allReports.length) {
+        list.innerHTML = '<div class="empty-state">AUCUN RAPPORT ENCORE<br>SOIS LE PREMIER !</div>';
+        document.getElementById('loadMoreWrap').style.display = 'none';
+        return;
+      }
+
+      const toShow = allReports.slice(0, showCount);
+      list.innerHTML = toShow.map(r => {
+        const sevIcon = ['','🟡','🟠','🔴','💀'][r.stars] || '⚪';
+        const date    = _fmtDate(r.ts);
+        return `<div class="bug-item">
+          <span class="bug-sev-icon">${sevIcon}</span>
+          <div style="flex:1;min-width:0">
+            <div class="bug-game-tag">Par ${escHtml(r.author)}${date ? ' · ' + date : ''}</div>
+            <div class="bug-desc-text">${escHtml(r.text)}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+      const wrap = document.getElementById('loadMoreWrap');
+      if (allReports.length > showCount) {
+        wrap.style.display = 'block';
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+
+    document.getElementById('loadMoreBtn').addEventListener('click', () => {
+      showCount += 10;
+      renderReports();
+    });
+
+    /* ── Utils ── */
+    function escHtml(s) {
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    function _fmtDate(ts) {
+      if (!ts) return '';
+      try {
+        const d = ts && ts.toDate ? ts.toDate()
+                : new Date(typeof ts === 'number' ? ts : (ts.seconds||0)*1000);
+        return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' });
+      } catch { return ''; }
+    }
+
+    // Appliquer le thème
+    const theme = localStorage.getItem('pw_theme');
+    if (theme) document.documentElement.setAttribute('data-theme', theme);
+
+    loadCommunityReports();
   </script>
 </body>
 </html>
