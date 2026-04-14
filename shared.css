@@ -340,3 +340,69 @@
   .rating-overview { flex-direction: column; align-items: flex-start; gap: .8rem; }
   .bottom-sections { padding: 0 .6rem 3rem; }
 }
+
+/* ── Pseudo bar (replaces class mode) ── */
+.pseudo-bar {
+  padding: .9rem 1.2rem;
+  background: #12122a;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.pseudo-bar-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: .45rem;
+  color: #7070a0;
+  letter-spacing: 1px;
+}
+.pseudo-bar-inner {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.pseudo-bar-inner input {
+  flex: 1;
+  min-width: 140px;
+  background: #0a0a1a;
+  border: 1px solid #1e1e4a;
+  border-radius: 6px;
+  padding: .45rem .8rem;
+  color: #e8e8ff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: .95rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color .2s;
+}
+.pseudo-bar-inner input:focus { border-color: #00ff88; }
+.pseudo-bar-inner button {
+  font-family: 'Press Start 2P', monospace;
+  font-size: .4rem;
+  letter-spacing: 1px;
+  padding: .45rem .9rem;
+  border: 1px solid #00ff88;
+  border-radius: 6px;
+  background: transparent;
+  color: #00ff88;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.pseudo-bar-inner button:hover { background: #00ff88; color: #000; }
+
+/* ── Fullscreen button ── */
+.fs-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: .45rem;
+  letter-spacing: 1px;
+  padding: .5rem 1rem;
+  border: 1px solid #1e1e4a;
+  border-radius: 6px;
+  background: transparent;
+  color: #7070a0;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.fs-btn:hover { border-color: #00f0ff; color: #00f0ff; box-shadow: 0 0 8px #00f0ff44; }
