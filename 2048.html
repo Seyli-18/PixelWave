@@ -86,7 +86,18 @@
     .btn-reset:hover{background:var(--bad);color:#fff;box-shadow:0 0 20px var(--bad)}
     .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
     .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
-  </style>
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
+</style>
+  <script>
+    // Appliquer le thème sauvegardé immédiatement
+    (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 <body>
   <div class="top-bar">
@@ -262,6 +273,27 @@
       window.PixelWave.initFullscreen('boardWrap','fsBtn');
       window.PixelWave.init('2048','#ffe44e');
     });
+  </script>
+  <script>
+    // ── Pseudo modal avant le 1er jeu (overlay btn) ──
+    (function(){
+      var _ovBtn = document.getElementById('ovBtn') || document.getElementById('newBtn');
+      if (!_ovBtn) return;
+      var _firstPlay = true;
+      var _orig = _ovBtn.cloneNode(true);
+      _ovBtn.parentNode.replaceChild(_orig, _ovBtn);
+      _orig.addEventListener('click', function(e){
+        if (_firstPlay && !localStorage.getItem('pw_pseudo')) {
+          _firstPlay = false;
+          e.stopImmediatePropagation();
+          window.PixelWave.promptPseudo('2048', function(){
+            _orig.click();
+          });
+        } else {
+          _firstPlay = false;
+        }
+      }, true);
+    })();
   </script>
 </body>
 </html>
