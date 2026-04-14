@@ -58,7 +58,10 @@
 <body>
   <div class="top-bar">
     <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-    <a href="index.html" class="back-btn">← RETOUR</a>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
   </div>
 
   <div class="game-area">
@@ -205,7 +208,6 @@
         msgEl.textContent=`GAME OVER — SCORE ${score}`;
         msgEl.style.color='#ff3c3c';
         if(window.PixelWave&&window.PixelWave.submitScore) window.PixelWave.submitScore(score);
-        if(window.PixelWave&&window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
       }
       updateUI();
     }
@@ -373,7 +375,8 @@
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded',()=>{ window.PixelWave.init('tetris','#00f0ff'); });
+    window.addEventListener('DOMContentLoaded',()=>{ window.PixelWave.initFullscreen('tetrisCanvas', 'fsBtn');
+      window.PixelWave.init('tetris','#00f0ff'); });
   </script>
 </body>
 </html>
