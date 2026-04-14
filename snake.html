@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>PixelWave — Snake Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="shared.css"/>
   <style>
+    html{touch-action:manipulation}
+    
     /* =====================
        SNAKE — styles.css
        ===================== */
@@ -208,17 +210,25 @@
       text-align: center;
       line-height: 2.2;
     }
-  </style>
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
+</style>
+  <script>
+    // Appliquer le thème sauvegardé immédiatement
+    (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 <body>
 
   <!-- Nav -->
   <div class="top-bar">
     <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-    <div style="display:flex;align-items:center;gap:.6rem">
-      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
-      <a href="index.html" class="back-btn">← RETOUR</a>
-    </div>
+    <a href="index.html" class="back-btn">← RETOUR</a>
   </div>
 
   <div class="game-wrapper">
@@ -392,6 +402,7 @@
       msgEl.textContent = `GAME OVER — SCORE ${score} — APPUIE SUR RESET`;
       msgEl.style.color = '#ff3cac';
       if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+      if (window.PixelWave && window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
     }
 
     /* ── Controls ── */
@@ -448,11 +459,34 @@
   <script src="shared.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      window.PixelWave.initFullscreen('gameCanvas', 'fsBtn');
       window.PixelWave.init('snake', '#00ff88');
     });
     // Hook into game over to submit score
     const _origGameOver = typeof gameOver !== 'undefined' ? gameOver : null;
+  </script>
+  <script>
+    // ── Pseudo modal avant le 1er start ──
+    (function(){
+      var _origStartBtn = document.getElementById('startBtn');
+      if (!_origStartBtn) return;
+      var _firstStart = true;
+      var _origClick = null;
+      // Clone pour remplacer (évite les listeners multiples)
+      var _newBtn = _origStartBtn.cloneNode(true);
+      _origStartBtn.parentNode.replaceChild(_newBtn, _origStartBtn);
+      _newBtn.addEventListener('click', function(e){
+        if (_firstStart && !localStorage.getItem('pw_pseudo')) {
+          _firstStart = false;
+          e.stopImmediatePropagation();
+          window.PixelWave.promptPseudo('snake', function(){
+            // Simuler le vrai clic après confirmation
+            _newBtn.click();
+          });
+        } else {
+          _firstStart = false;
+        }
+      }, true); // capture phase = before game listener
+    })();
   </script>
 </body>
 </html>
