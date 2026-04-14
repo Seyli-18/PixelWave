@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>PixelWave — 2048</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    :root{
+      --bg:#0a0a1a;--accent:#ffe44e;--bad:#ff3c3c;
+      --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
+      --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{touch-action:manipulation}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .top-right{display:flex;align-items:center;gap:.6rem}
+    .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
+    .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
+    .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1.2rem;width:100%}
+    h1{font-family:var(--font-px);font-size:.85rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px}
+
+    .stats{display:flex;gap:2rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
+    .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
+    .stat-val{font-size:.8rem;color:var(--accent)}
+
+    /* Board */
+    #boardWrap{
+      position:relative;
+      background:#0d0d22;
+      border-radius:12px;
+      border:2px solid #ffe44e33;
+      box-shadow:0 0 30px #ffe44e11;
+      padding:10px;
+      width:min(360px,96vw);
+    }
+    #board{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+      width:100%;
+    }
+    .cell{
+      aspect-ratio:1;
+      border-radius:8px;
+      background:#12122a;
+      border:1px solid #1e1e4a;
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--font-px);
+      font-size:clamp(.45rem,.8vw+.3rem,.85rem);
+      font-weight:700;
+      transition:transform .1s,background .1s;
+      position:relative;
+      overflow:hidden;
+    }
+    .cell.new{animation:pop .15s ease}
+    .cell.merge{animation:merge .15s ease}
+    @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+    @keyframes merge{0%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+    /* Tile colors */
+    .t2   {background:#1a3a1a;color:#00ff88;border-color:#00ff8844}
+    .t4   {background:#1a2a3a;color:#00f0ff;border-color:#00f0ff44}
+    .t8   {background:#2a1a3a;color:#b44fff;border-color:#b44fff44}
+    .t16  {background:#3a1a1a;color:#ff6b35;border-color:#ff6b3544}
+    .t32  {background:#3a2a0a;color:#ffe44e;border-color:#ffe44e44}
+    .t64  {background:#3a0a0a;color:#ff3c3c;border-color:#ff3c3c44}
+    .t128 {background:#2a0a3a;color:#ff3cac;border-color:#ff3cac66;font-size:clamp(.38rem,.7vw+.2rem,.7rem)}
+    .t256 {background:#0a2a3a;color:#00f0ff;border-color:#00f0ff66;font-size:clamp(.35rem,.65vw+.2rem,.65rem)}
+    .t512 {background:#0a3a1a;color:#00ff88;border-color:#00ff8866;font-size:clamp(.35rem,.65vw+.2rem,.65rem)}
+    .t1024{background:#3a2a00;color:#ffe44e;border-color:#ffe44e99;font-size:clamp(.3rem,.6vw+.15rem,.55rem)}
+    .t2048{background:#ffe44e;color:#000;border-color:#fff;box-shadow:0 0 20px #ffe44e;font-size:clamp(.3rem,.6vw+.15rem,.55rem);animation:glow2048 1s infinite alternate}
+    @keyframes glow2048{from{box-shadow:0 0 10px #ffe44e}to{box-shadow:0 0 30px #ffe44e,0 0 60px #ff9900}}
+
+    .msg{font-family:var(--font-px);font-size:.55rem;color:var(--muted);letter-spacing:2px;min-height:1.8em;text-align:center;line-height:1.8}
+    .controls{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center}
+    .btn{font-family:var(--font-px);font-size:.48rem;letter-spacing:2px;padding:.65rem 1.3rem;border:2px solid;border-radius:8px;cursor:pointer;background:transparent;transition:all .2s}
+    .btn-start{color:var(--accent);border-color:var(--accent)}
+    .btn-start:hover{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+    .btn-reset{color:var(--bad);border-color:var(--bad)}
+    .btn-reset:hover{background:var(--bad);color:#fff;box-shadow:0 0 20px var(--bad)}
+    .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
+    .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div class="top-right">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>🔢 2048</h1>
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">MOVES</span><span class="stat-val" id="movesEl">0</span></div>
+    </div>
+
+    <div id="boardWrap">
+      <div id="board"></div>
+    </div>
+
+    <p class="msg" id="msgEl"></p>
+    <div class="controls">
+      <button class="btn btn-start" id="newBtn">▶ NOUVEAU JEU</button>
+      <button class="btn btn-reset" id="undoBtn">↩ ANNULER</button>
+    </div>
+    <p class="tips">← → ↑ ↓ CLAVIER &nbsp;|&nbsp; SWIPE SUR MOBILE &nbsp;|&nbsp; COMBINE JUSQU'À 2048 !</p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script>
+  (function(){
+    const SIZE=4;
+    let grid, score, best, moves, prevGrid, prevScore;
+    const msgEl=document.getElementById('msgEl');
+
+    /* ── Helpers ── */
+    function empty(){ return Array.from({length:SIZE},()=>Array(SIZE).fill(0)); }
+    function clone(g){ return g.map(r=>[...r]); }
+
+    function addTile(g){
+      const cells=[];
+      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(!g[r][c]) cells.push([r,c]);
+      if(!cells.length) return;
+      const [r,c]=cells[Math.floor(Math.random()*cells.length)];
+      g[r][c]=Math.random()<0.9?2:4;
+    }
+
+    /* ── Slide one row left, return {row, gained} ── */
+    function slideLeft(row){
+      let r=row.filter(v=>v), gained=0;
+      for(let i=0;i<r.length-1;i++){
+        if(r[i]===r[i+1]){ r[i]*=2; gained+=r[i]; r.splice(i+1,1); }
+      }
+      while(r.length<SIZE) r.push(0);
+      return {row:r, gained};
+    }
+
+    function rotateRight(g){
+      return Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>g[SIZE-1-c][r]));
+    }
+    function rotateLeft(g){
+      return Array.from({length:SIZE},(_,r)=>Array.from({length:SIZE},(_,c)=>g[c][SIZE-1-r]));
+    }
+
+    function move(dir){
+      let g=clone(grid);
+      let gained=0, moved=false;
+      // Rotate so we always slide left
+      if(dir==='right') g=rotateRight(rotateRight(g));
+      if(dir==='up')    g=rotateLeft(g);
+      if(dir==='down')  g=rotateRight(g);
+
+      const newG=g.map(row=>{ const res=slideLeft(row); gained+=res.gained; if(res.row.join()!==row.join()) moved=true; return res.row; });
+
+      // Rotate back
+      let final=newG;
+      if(dir==='right') final=rotateLeft(rotateLeft(newG));
+      if(dir==='up')    final=rotateRight(newG);
+      if(dir==='down')  final=rotateLeft(newG);
+
+      if(!moved) return false;
+      prevGrid=clone(grid); prevScore=score;
+      grid=final; score+=gained; moves++;
+      if(score>best){ best=score; localStorage.setItem('2048best',best); }
+      addTile(grid);
+      render();
+      checkEnd();
+      return true;
+    }
+
+    function checkEnd(){
+      // Win
+      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++) if(grid[r][c]===2048){
+        msgEl.textContent='🎉 2048 ATTEINT !'; msgEl.style.color='#ffe44e';
+        if(window.PixelWave&&window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+        return;
+      }
+      // Can still move?
+      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){
+        if(!grid[r][c]) return;
+        if(c<SIZE-1&&grid[r][c]===grid[r][c+1]) return;
+        if(r<SIZE-1&&grid[r][c]===grid[r+1][c]) return;
+      }
+      msgEl.textContent='GAME OVER — PLUS DE MOUVEMENTS'; msgEl.style.color='#ff3c3c';
+      if(window.PixelWave&&window.PixelWave.submitScore) window.PixelWave.submitScore(score);
+    }
+
+    /* ── Render ── */
+    function render(){
+      const board=document.getElementById('board');
+      board.innerHTML='';
+      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){
+        const v=grid[r][c];
+        const cell=document.createElement('div');
+        cell.className='cell'+(v?' t'+v:'');
+        cell.textContent=v||'';
+        board.appendChild(cell);
+      }
+      document.getElementById('scoreEl').textContent=score.toLocaleString();
+      document.getElementById('bestEl').textContent=best.toLocaleString();
+      document.getElementById('movesEl').textContent=moves;
+    }
+
+    /* ── New game ── */
+    function newGame(){
+      grid=empty(); score=0; moves=0;
+      best=parseInt(localStorage.getItem('2048best')||'0');
+      prevGrid=null; prevScore=0;
+      addTile(grid); addTile(grid);
+      msgEl.textContent=''; msgEl.style.color='';
+      render();
+    }
+
+    /* ── Undo ── */
+    document.getElementById('undoBtn').addEventListener('click',()=>{
+      if(!prevGrid) return;
+      grid=clone(prevGrid); score=prevScore; moves=Math.max(0,moves-1);
+      prevGrid=null;
+      msgEl.textContent=''; msgEl.style.color='';
+      render();
+    });
+
+    document.getElementById('newBtn').addEventListener('click', newGame);
+
+    /* ── Keyboard ── */
+    document.addEventListener('keydown',e=>{
+      const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};
+      const d=map[e.key]; if(d){e.preventDefault();move(d);}
+    });
+
+    /* ── Touch swipe ── */
+    let tx=0,ty=0;
+    const bw=document.getElementById('boardWrap');
+    bw.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+    bw.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+      if(Math.abs(dx)<20&&Math.abs(dy)<20) return;
+      if(Math.abs(dx)>Math.abs(dy)) move(dx>0?'right':'left');
+      else move(dy>0?'down':'up');
+    },{passive:true});
+
+    newGame();
+  })();
+  </script>
+
+  <script src="shared.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded',()=>{
+      window.PixelWave.initFullscreen('boardWrap','fsBtn');
+      window.PixelWave.init('2048','#ffe44e');
+    });
+  </script>
+</body>
+</html>
