@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>PixelWave — Geometry Dash</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    :root{
+      --bg:#0a0a1a;--accent:#ff6b35;--bad:#ff3c3c;
+      --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
+      --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{touch-action:manipulation}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .top-right{display:flex;align-items:center;gap:.6rem}
+    .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
+    .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
+    .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1rem;width:100%}
+    h1{font-family:var(--font-px);font-size:.78rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px}
+    .stats{display:flex;gap:2rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
+    .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
+    .stat-val{font-size:.8rem;color:var(--accent)}
+    #gameWrap{position:relative;width:480px;max-width:100%}
+    #gameCanvas{border:2px solid #ff6b3544;border-radius:8px;box-shadow:0 0 30px #ff6b3522;background:#000;display:block;width:100%;-webkit-touch-callout:none}
+    #overlay{position:absolute;inset:0;border-radius:8px;background:rgba(0,0,0,.75);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    #overlay.hidden{display:none}
+    .ov-title{font-family:var(--font-px);font-size:.6rem;color:var(--accent);text-shadow:0 0 12px var(--accent);text-align:center;letter-spacing:2px;line-height:2}
+    .ov-score{font-family:var(--font-px);font-size:1.2rem;color:#fff}
+    .ov-pct{font-family:var(--font-px);font-size:.5rem;color:#ffe44e;letter-spacing:1px}
+    .ov-btn{font-family:var(--font-px);font-size:.5rem;letter-spacing:2px;padding:.7rem 1.6rem;border:2px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+    .ov-btn:hover,.ov-btn:active{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+    .tap-area{width:100%;max-width:480px;height:60px;background:#12122a;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s;margin-top:.3rem}
+    .tap-area:active{background:#ff6b3522}
+    .tap-label{font-family:var(--font-px);font-size:.5rem;color:var(--muted);letter-spacing:2px;pointer-events:none}
+    .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
+    .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
+    /* progress bar */
+    .prog-wrap{width:100%;max-width:480px;height:6px;background:var(--border);border-radius:999px;overflow:hidden}
+    .prog-fill{height:100%;background:linear-gradient(90deg,#ff6b35,#ffe44e);border-radius:999px;transition:width .1s linear;width:0%}
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div class="top-right">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>🔷 GEOMETRY DASH</h1>
+    <div class="stats">
+      <div><span class="stat-label">TENTATIVES</span><span class="stat-val" id="attEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR %</span><span class="stat-val" id="bestEl">0%</span></div>
+      <div><span class="stat-label">NIVEAU</span><span class="stat-val" id="levelEl">1</span></div>
+    </div>
+
+    <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
+
+    <div id="gameWrap">
+      <canvas id="gameCanvas" width="480" height="260"></canvas>
+      <div id="overlay">
+        <div class="ov-title" id="ovTitle">🔷 GEOMETRY DASH</div>
+        <div class="ov-score" id="ovScore" style="display:none"></div>
+        <div class="ov-pct"  id="ovPct"   style="display:none"></div>
+        <button class="ov-btn" id="ovBtn">▶ JOUER</button>
+      </div>
+    </div>
+
+    <div class="tap-area" id="tapArea"><span class="tap-label">APPUIE N'IMPORTE OÙ !</span></div>
+
+    <p class="tips">ESPACE · CLIC · TAP → SAUTER · MAINTENIR = SAUTS RÉPÉTÉS</p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script>
+  (function(){
+    const canvas  = document.getElementById('gameCanvas');
+    const ctx     = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const ovTitle = document.getElementById('ovTitle');
+    const ovScore = document.getElementById('ovScore');
+    const ovPct   = document.getElementById('ovPct');
+    const ovBtn   = document.getElementById('ovBtn');
+    const W = canvas.width, H = canvas.height;
+
+    /* ── Constants ── */
+    const GROUND  = H - 50;
+    const CUBE_S  = 32;
+    const GRAVITY = 0.55;
+    const JUMP_V  = -11.5;
+    const SCROLL  = 4.5;
+
+    /* ── Level data (obstacle types: 0=spike, 1=block, 2=tall) ── */
+    /* Each level is an array of [x_offset, type] pairs */
+    function buildLevel(seed) {
+      const obs = [];
+      let x = 400;
+      const rng = lcg(seed);
+      const count = 30 + seed * 8;
+      for (let i = 0; i < count; i++) {
+        const type = Math.floor(rng() * 3);
+        obs.push({ x, type, w: type===2?32:24, h: type===0?28:type===1?32:52 });
+        x += 120 + Math.floor(rng() * 120);
+      }
+      // End portal
+      obs.push({ x, type:'end', w:30, h:60 });
+      return { obs, totalLen: x + 200 };
+    }
+
+    function lcg(seed) {
+      let s = seed * 1664525 + 1013904223;
+      return () => { s = (Math.imul(1664525, s) + 1013904223) | 0; return (s >>> 0) / 0xFFFFFFFF; };
+    }
+
+    /* ── State ── */
+    let cube, cam, level, levelData, attempts, bestPct, running, rafId;
+    let particles = [];
+    let bgHue = 220;
+    let held = false;
+
+    function init() {
+      cube = { x: 80, y: GROUND - CUBE_S, vy: 0, onGround: true, rot: 0, trail: [] };
+      cam  = { x: 0 };
+      attempts = parseInt(localStorage.getItem('gdAttempts') || '0') + 1;
+      bestPct  = parseFloat(localStorage.getItem('gdBest') || '0');
+      level    = parseInt(localStorage.getItem('gdLevel') || '1');
+      levelData = buildLevel(level);
+      particles = [];
+      running  = false;
+      updateUI();
+      draw();
+    }
+
+    function jump() {
+      if (!running) return;
+      if (cube.onGround) {
+        cube.vy = JUMP_V;
+        cube.onGround = false;
+        spawnParticles(cube.x + CUBE_S/2, cube.y + CUBE_S, '#ff6b35', 6);
+      }
+    }
+
+    function spawnParticles(x, y, color, n) {
+      for (let i=0;i<n;i++) particles.push({
+        x, y, vx:(Math.random()-.5)*4, vy:-(Math.random()*3+1),
+        life:1, color
+      });
+    }
+
+    /* ── Update ── */
+    function update() {
+      if (held && cube.onGround) jump();
+
+      // Physics
+      cube.vy   += GRAVITY;
+      cube.y    += cube.vy;
+      cube.rot  += 6;
+      cam.x     += SCROLL;
+
+      // Ground
+      if (cube.y >= GROUND - CUBE_S) {
+        cube.y       = GROUND - CUBE_S;
+        cube.vy      = 0;
+        cube.onGround = true;
+        cube.rot = Math.round(cube.rot / 90) * 90; // snap rotation
+      }
+
+      // Progress
+      const pct = Math.min(100, Math.floor((cam.x / levelData.totalLen) * 100));
+      document.getElementById('progFill').style.width = pct + '%';
+
+      // Obstacle collisions
+      for (const o of levelData.obs) {
+        const ox = o.x - cam.x;
+        if (ox > W + 60 || ox + o.w < -20) continue;
+        const oy = GROUND - o.h;
+
+        if (o.type === 'end') {
+          if (ox < cube.x + CUBE_S && ox + o.w > cube.x) {
+            winLevel(pct); return;
+          }
+          continue;
+        }
+
+        // AABB with small margin
+        if (cube.x + CUBE_S - 4 > ox && cube.x + 4 < ox + o.w &&
+            cube.y + CUBE_S - 4 > oy && cube.y + 4 < oy + o.h) {
+          die(pct); return;
+        }
+      }
+
+      // Particles
+      for (let i = particles.length-1; i>=0; i--) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life -= 0.06;
+        if (p.life <= 0) particles.splice(i,1);
+      }
+    }
+
+    /* ── Die ── */
+    function die(pct) {
+      running = false;
+      cancelAnimationFrame(rafId);
+      spawnParticles(cube.x+CUBE_S/2, cube.y+CUBE_S/2, '#ff3c3c', 18);
+      if (pct > bestPct) { bestPct = pct; localStorage.setItem('gdBest', bestPct); }
+      localStorage.setItem('gdAttempts', attempts);
+      updateUI();
+      // show overlay after particles
+      setTimeout(() => {
+        ovTitle.innerHTML  = '💥 CRASH !';
+        ovScore.style.display = 'block';
+        ovPct.style.display   = 'block';
+        ovScore.textContent   = 'TENTATIVE #' + attempts;
+        ovPct.textContent     = pct + '% DU NIVEAU';
+        ovBtn.textContent     = '↺ RÉESSAYER';
+        overlay.classList.remove('hidden');
+        if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(pct);
+      }, 600);
+    }
+
+    /* ── Win ── */
+    function winLevel(pct) {
+      running = false;
+      cancelAnimationFrame(rafId);
+      bestPct = 100;
+      localStorage.setItem('gdBest', 100);
+      level++;
+      localStorage.setItem('gdLevel', level);
+      updateUI();
+      spawnParticles(cube.x+CUBE_S/2, cube.y+CUBE_S/2, '#ffe44e', 24);
+      setTimeout(() => {
+        ovTitle.innerHTML    = '🎉 NIVEAU TERMINÉ !';
+        ovScore.style.display = 'block';
+        ovPct.style.display   = 'none';
+        ovScore.textContent   = 'PROCHAIN NIVEAU : ' + level;
+        ovBtn.textContent     = '▶ CONTINUER';
+        overlay.classList.remove('hidden');
+        if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(100 * (level-1));
+      }, 400);
+    }
+
+    /* ── Draw ── */
+    function draw() {
+      // Animated bg
+      bgHue = (bgHue + 0.15) % 360;
+      const bg = ctx.createLinearGradient(0,0,0,H);
+      bg.addColorStop(0, `hsl(${bgHue},40%,8%)`);
+      bg.addColorStop(1, `hsl(${(bgHue+40)%360},30%,12%)`);
+      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+      // BG grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,.04)'; ctx.lineWidth = 1;
+      for (let x=((-cam.x*0.3)%60);x<W;x+=60){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+      for (let y=0;y<H;y+=40){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+
+      // Ground
+      ctx.fillStyle = '#1a1a3a';
+      ctx.fillRect(0, GROUND, W, H - GROUND);
+      ctx.fillStyle = '#ff6b35';
+      ctx.fillRect(0, GROUND, W, 3);
+
+      // Obstacles
+      levelData.obs.forEach(o => {
+        const ox = o.x - cam.x;
+        if (ox > W + 60 || ox + o.w < -20) return;
+        const oy = GROUND - o.h;
+
+        if (o.type === 'end') {
+          // Portal
+          ctx.fillStyle = '#00ff88';
+          ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 20;
+          ctx.fillRect(ox, oy, 6, o.h);
+          ctx.fillRect(ox+24, oy, 6, o.h);
+          ctx.font = '10px sans-serif'; ctx.fillStyle='#00ff88';
+          ctx.fillText('END', ox+1, oy-5);
+          ctx.shadowBlur = 0;
+          return;
+        }
+
+        if (o.type === 0) {
+          // Spike (triangle)
+          ctx.fillStyle = '#ff3c3c';
+          ctx.shadowColor = '#ff3c3c'; ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.moveTo(ox, GROUND);
+          ctx.lineTo(ox + o.w/2, oy);
+          ctx.lineTo(ox + o.w, GROUND);
+          ctx.closePath(); ctx.fill();
+          ctx.shadowBlur = 0;
+        } else {
+          // Block
+          ctx.fillStyle = o.type===2 ? '#b44fff' : '#00f0ff';
+          ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+          ctx.fillRect(ox, oy, o.w, o.h);
+          ctx.fillStyle = 'rgba(255,255,255,.15)';
+          ctx.fillRect(ox+2, oy+2, o.w-4, 4);
+          ctx.shadowBlur = 0;
+        }
+      });
+
+      // Particles
+      particles.forEach(p => {
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 4*p.life, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+
+      // Cube (only draw if alive)
+      if (running || !overlay.classList.contains('hidden')) {
+        // Actually always draw cube for particles to show
+      }
+      if (cube) {
+        ctx.save();
+        ctx.translate(cube.x + CUBE_S/2, cube.y + CUBE_S/2);
+        ctx.rotate(cube.rot * Math.PI / 180);
+        // Glow
+        ctx.shadowColor = '#ff6b35'; ctx.shadowBlur = 14;
+        ctx.fillStyle = '#ff6b35';
+        ctx.fillRect(-CUBE_S/2, -CUBE_S/2, CUBE_S, CUBE_S);
+        // Inner design
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(255,255,255,.3)';
+        ctx.fillRect(-CUBE_S/2+3, -CUBE_S/2+3, CUBE_S-6, 6);
+        ctx.strokeStyle = '#ffe44e'; ctx.lineWidth = 2;
+        ctx.strokeRect(-CUBE_S/2+2, -CUBE_S/2+2, CUBE_S-4, CUBE_S-4);
+        ctx.restore();
+      }
+
+      // HUD %
+      if (running) {
+        const pct = Math.min(100, Math.floor((cam.x/levelData.totalLen)*100));
+        ctx.fillStyle = 'rgba(255,255,255,.7)';
+        ctx.font = '10px "Press Start 2P",monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(pct+'%', W-10, 22);
+        ctx.textAlign = 'left';
+      }
+    }
+
+    /* ── RAF loop ── */
+    function loop() {
+      rafId = requestAnimationFrame(loop);
+      if (running) update();
+      draw();
+    }
+
+    function updateUI() {
+      document.getElementById('attEl').textContent   = attempts || 0;
+      document.getElementById('bestEl').textContent  = (bestPct||0) + '%';
+      document.getElementById('levelEl').textContent = level || 1;
+    }
+
+    /* ── Overlay button ── */
+    function startGame() {
+      init();
+      overlay.classList.add('hidden');
+      running = true;
+      rafId = requestAnimationFrame(loop);
+    }
+    ovBtn.addEventListener('click',    startGame);
+    ovBtn.addEventListener('touchend', e => { e.preventDefault(); startGame(); });
+
+    /* ── Input ── */
+    let lastTap = 0;
+    function onInput(e) {
+      if (e.type === 'touchend' || e.type === 'pointerdown') {
+        const now = Date.now();
+        if (now - lastTap < 300) { e.preventDefault(); return; }
+        lastTap = now;
+      }
+      if (!overlay.classList.contains('hidden')) return;
+      jump();
+    }
+    function onHold(down) { held = down; if (down && !overlay.classList.contains('hidden')) return; if(down) jump(); }
+
+    document.addEventListener('keydown', e => { if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW'){e.preventDefault();jump();} });
+    canvas.addEventListener('pointerdown', e => { onHold(true); }, {passive:false});
+    document.getElementById('tapArea').addEventListener('pointerdown', e => { onHold(true); onInput(e); }, {passive:false});
+    document.addEventListener('pointerup', () => held = false);
+
+    /* ── Start ── */
+    init();
+    ovTitle.innerHTML  = '🔷 GEOMETRY DASH<br><span style="font-size:.42rem;color:#7070a0">SAUTE PAR-DESSUS LES OBSTACLES !</span>';
+    ovScore.style.display = 'none';
+    ovPct.style.display   = 'none';
+    ovBtn.textContent      = '▶ JOUER';
+    loop();
+  })();
+  </script>
+
+  <script src="shared.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      window.PixelWave.initFullscreen('gameWrap', 'fsBtn');
+      window.PixelWave.init('geodash', '#ff6b35');
+    });
+  </script>
+</body>
+</html>
