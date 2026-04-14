@@ -40,7 +40,18 @@
     .tap-label{font-family:var(--font-px);font-size:.48rem;color:var(--muted);letter-spacing:2px;pointer-events:none}
     .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
     .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
-  </style>
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
+</style>
+  <script>
+    // Appliquer le thème sauvegardé immédiatement
+    (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 <body>
   <div class="top-bar">
@@ -132,7 +143,7 @@
     function update() {
       frame++;
       score++;
-      speed = 4.5 + score/500;
+      speed = 3.0 + score/800;  // Réduit : était 4.5 + score/500
 
       // Dino physics
       const dH = (ducking && dino.onGround) ? DINO_DUCK_H : DINO_H;
@@ -146,8 +157,8 @@
       }
       dino.animFrame = Math.floor(frame/8)%2;
 
-      // Spawn
-      const spawnRate = Math.max(40, 90 - score/100);
+      // Spawn — plus de temps au début
+      const spawnRate = Math.max(55, 130 - score/80);
       if (frame % Math.round(spawnRate) === 0) spawnObs();
       if (frame % 80 === 0) spawnCloud();
 
@@ -339,6 +350,30 @@
       window.PixelWave.initFullscreen('gameWrap','fsBtn');
       window.PixelWave.init('dino','#00ff88');
     });
+  </script>
+  <script>
+    // ── Pseudo modal avant le 1er start ──
+    (function(){
+      var _origStartBtn = document.getElementById('startBtn');
+      if (!_origStartBtn) return;
+      var _firstStart = true;
+      var _origClick = null;
+      // Clone pour remplacer (évite les listeners multiples)
+      var _newBtn = _origStartBtn.cloneNode(true);
+      _origStartBtn.parentNode.replaceChild(_newBtn, _origStartBtn);
+      _newBtn.addEventListener('click', function(e){
+        if (_firstStart && !localStorage.getItem('pw_pseudo')) {
+          _firstStart = false;
+          e.stopImmediatePropagation();
+          window.PixelWave.promptPseudo('dino', function(){
+            // Simuler le vrai clic après confirmation
+            _newBtn.click();
+          });
+        } else {
+          _firstStart = false;
+        }
+      }, true); // capture phase = before game listener
+    })();
   </script>
 </body>
 </html>
