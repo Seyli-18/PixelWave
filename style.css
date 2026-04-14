@@ -223,7 +223,7 @@ nav a:hover { color: var(--accent1); }
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, var(--accent3)44, transparent);
+  background: linear-gradient(90deg, #ffe44e44, transparent);
 }
 
 /* ── Game grid ────────────────────────────── */
@@ -288,11 +288,8 @@ nav a:hover { color: var(--accent1); }
 .card-thumb.flag-bg   { background: linear-gradient(135deg, #1a0a2a, #2a1a4a); }
 .card-thumb.pacman-bg { background: linear-gradient(135deg, #2a2000, #4a3800); }
 .card-thumb.coming-bg { background: linear-gradient(135deg, #1a1a2a, #2a2a3a); }
-.card-thumb.tetris-bg    { background: linear-gradient(135deg, #001a2a, #002a4a); }
-.card-thumb.breakout-bg  { background: linear-gradient(135deg, #2a1000, #4a2000); }
-.card-thumb.memory-bg    { background: linear-gradient(135deg, #2a0020, #4a003a); }
-.card-thumb.flappy-bg    { background: linear-gradient(135deg, #1a2a00, #2a4a00); }
-.card-thumb.capitales-bg { background: linear-gradient(135deg, #001a2a, #003a4a); }
+.card-thumb.tetris-bg { background: linear-gradient(135deg, #001a2a, #002a4a); }
+.card-thumb.breakout-bg { background: linear-gradient(135deg, #2a1000, #4a2000); }
 
 /* Badge */
 .badge {
@@ -524,4 +521,96 @@ footer span {
   .game-frame{
     height: 65vh;
   }
+}
+/* ── New card backgrounds ── */
+.card-thumb.geodash-bg   { background: linear-gradient(135deg, #2a1000, #3a1800); }
+.card-thumb.dino-bg      { background: linear-gradient(135deg, #0a2a0a, #153a10); }
+.card-thumb.2048-bg      { background: linear-gradient(135deg, #2a2000, #3a3000); }
+.card-thumb.capitales-bg { background: linear-gradient(135deg, #001a2a, #002a3a); }
+.card-thumb.memory-bg    { background: linear-gradient(135deg, #2a0020, #3a0030); }
+.card-thumb.flappy-bg    { background: linear-gradient(135deg, #1a2a00, #253a05); }
+
+/* ═══════════════════════════
+   CHANGELOG SECTION
+═══════════════════════════ */
+.changelog-section {
+  position: relative;
+  z-index: 1;
+  padding: 0 2rem 5rem;
+  width: 100%;
+}
+
+.changelog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.changelog-card {
+  background: #0f0f26;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.changelog-card:hover { border-color: #2e2e5a; }
+.changelog-card.current { border-color: var(--accent1); box-shadow: 0 0 20px #00f0ff11; }
+.changelog-card.next    { border-color: var(--accent3); box-shadow: 0 0 20px #ffe44e11; }
+
+.cl-header {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+.cl-version {
+  font-family: var(--font-pixel);
+  font-size: .6rem;
+  color: var(--text);
+}
+
+.cl-date {
+  font-family: var(--font-pixel);
+  font-size: .42rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.cl-badge {
+  font-family: var(--font-pixel);
+  font-size: .38rem;
+  padding: .25rem .6rem;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.badge-current { background: #001a2a; color: var(--accent1); border: 1px solid var(--accent1); }
+.badge-next    { background: #2a2000; color: var(--accent3); border: 1px solid var(--accent3); }
+
+.cl-list {
+  padding: 1rem 1.2rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.cl-list li {
+  font-family: var(--font-body);
+  font-size: .9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding-left: .2rem;
+}
+
+.changelog-card.current .cl-list li { color: #b0b0d8; }
+.changelog-card.next .cl-list li    { color: #a0a060; }
+
+@media (max-width: 600px) {
+  .changelog-section { padding: 0 1rem 3rem; }
+  .changelog-grid    { grid-template-columns: 1fr; }
 }
