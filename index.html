@@ -5,60 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixelWave — Joue maintenant</title>
   <link rel="stylesheet" href="style.css" />
+  <meta name="google-site-verification" content="h9Vq-qmq-8eekdE0RTIX8DzxmztgvLF30dBKJP1GlCE" />
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } 
-    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDccH-NoPxlJJAmBYq_xoYE0f7_IFZvTlE",
-      authDomain: "pixelwave-1dd12.firebaseapp.com",
-      projectId: "pixelwave-1dd12",
-      storageBucket: "pixelwave-1dd12.firebasestorage.app",
-      messagingSenderId: "643733344941",
-      appId: "1:643733344941:web:5d55206f213c55c52bec24",
-      measurementId: "G-WHG2T4QYZR"
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
+      from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    const cfg = {
+      apiKey:"AIzaSyDccH-NoPxlJJAmBYq_xoYE0f7_IFZvTlE",
+      authDomain:"pixelwave-1dd12.firebaseapp.com",
+      projectId:"pixelwave-1dd12",
+      storageBucket:"pixelwave-1dd12.firebasestorage.app",
+      messagingSenderId:"643733344941",
+      appId:"1:643733344941:web:5d55206f213c55c52bec24"
     };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-
-    // 🔐 Google Auth
+    const app  = getApps().length ? getApps()[0] : initializeApp(cfg);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("googleSignIn");
-      const userInfo = document.getElementById("userInfo");
-
-    btn.addEventListener("click", () => {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-
-          userInfo.innerHTML = `
-            <img src="${user.photoURL}" width="40" style="border-radius:50%"><br>
-            👾 ${user.displayName}
-          `;
-        })
-        .catch((error) => {
-          console.error(error);
-          alert(error.message);
-        });
+    const prov = new GoogleAuthProvider();
+    window.addEventListener('DOMContentLoaded', () => {
+      const btn      = document.getElementById('googleSignIn');
+      const userInfo = document.getElementById('userInfo');
+      onAuthStateChanged(auth, user => {
+        if (user) {
+          btn.textContent = '🚪 Déconnexion';
+          userInfo.innerHTML = `<img src="${user.photoURL}" width="32" style="border-radius:50%;vertical-align:middle;margin-right:6px">${user.displayName.split(' ')[0]}`;
+        } else {
+          btn.textContent = '🎮 Connexion';
+          userInfo.innerHTML = '';
+        }
+      });
+      btn.addEventListener('click', () => {
+        if (auth.currentUser) signOut(auth);
+        else signInWithPopup(auth, prov).catch(console.error);
+      });
     });
-  });
-</script>
-<meta name="google-site-verification" content="h9Vq-qmq-8eekdE0RTIX8DzxmztgvLF30dBKJP1GlCE" />
+  </script>
 </head>
 <body>
-  <!-- ── Header ── -->
   <header>
     <div class="logo">PIXEL<span style="color:#ff3cac;-webkit-text-fill-color:#ff3cac">WAVE</span></div>
     <nav>
-      <a href="#">Accueil</a>
-      <a href="#">Top Jeux</a>
-      <a href="#">Nouveautés</a>
+      <a href="index.html">Accueil</a>
+      <a href="#changelog">Mises à jour</a>
+      <a href="bugs.html">🐛 Bugs</a>
     </nav>
     <div class="search-wrap">
       <span class="icon">🔍</span>
@@ -66,17 +54,15 @@
     </div>
     <div class="auth">
       <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
-      <p id="userInfo"></p>
+      <span id="userInfo" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.9rem;color:#e8e8ff"></span>
     </div>
   </header>
 
-  <!-- ── Hero ── -->
   <section class="hero">
     <h1>JOUE GRATUITEMENT<br>DIRECTEMENT DANS TON NAVIGATEUR</h1>
-    <p>Des centaines de jeux rétro &amp; modernes — sans téléchargement.</p>
+    <p>Des dizaines de jeux rétro &amp; modernes — sans téléchargement.</p>
   </section>
 
-  <!-- ── Category chips ── -->
   <div class="categories">
     <button class="chip active" data-filter="all">🕹️ Tous</button>
     <button class="chip" data-filter="arcade">🚀 Arcade</button>
@@ -84,15 +70,78 @@
     <button class="chip" data-filter="puzzle">🧩 Puzzle</button>
   </div>
 
-  <!-- ── Game section ── -->
   <p class="section-title">JEUX POPULAIRES</p>
-  <div class="game-grid" id="gameGrid">
-    <!-- Cartes injectées par main.js -->
-  </div>
+  <div class="game-grid" id="gameGrid"></div>
 
-  <!-- ── Footer ── -->
+  <!-- ════════════════════════
+       CHANGELOG
+  ════════════════════════ -->
+  <section class="changelog-section" id="changelog">
+    <p class="section-title">📋 MISES À JOUR</p>
+    <div class="changelog-grid">
+
+      <div class="changelog-card current">
+        <div class="cl-header">
+          <span class="cl-version">v3.0</span>
+          <span class="cl-date">Avril 2026</span>
+          <span class="cl-badge badge-current">ACTUELLE</span>
+        </div>
+        <ul class="cl-list">
+          <li>🐛 Correction double enregistrement des scores</li>
+          <li>🐤 Flappy Bird : reset après game over, anti-zoom mobile</li>
+          <li>⛶ Bouton Plein Écran sur tous les jeux</li>
+          <li>👤 Pseudo aléatoire si vide (ex: EpicPlayer342)</li>
+          <li>🔷 Nouveau : Geometry Dash</li>
+          <li>🦕 Nouveau : Dino Runner</li>
+          <li>🔢 Nouveau : 2048</li>
+          <li>🐛 Page Signalement de Bugs</li>
+          <li>🔥 Données Firebase Firestore (scores + avis partagés)</li>
+        </ul>
+      </div>
+
+      <div class="changelog-card">
+        <div class="cl-header">
+          <span class="cl-version">v2.0</span>
+          <span class="cl-date">Mars 2026</span>
+        </div>
+        <ul class="cl-list">
+          <li>🃏 Memory Cards (3 difficultés)</li>
+          <li>🌍 Quiz Capitales du Monde</li>
+          <li>⭐ Avis avec étoiles sur chaque jeu</li>
+          <li>🏆 Leaderboard par jeu</li>
+          <li>🏫 Mode Classe avec pseudo</li>
+          <li>🔐 Connexion Google</li>
+          <li>🏳️ Drapeaux Afrique</li>
+        </ul>
+      </div>
+
+      <div class="changelog-card next">
+        <div class="cl-header">
+          <span class="cl-version">v4.0</span>
+          <span class="cl-date">Bientôt</span>
+          <span class="cl-badge badge-next">PROCHAINEMENT</span>
+        </div>
+        <ul class="cl-list">
+          <li>♟️ Échecs contre l'IA</li>
+          <li>🎯 Drapeaux Asie &amp; Amériques</li>
+          <li>🧩 Sudoku interactif</li>
+          <li>🔊 Effets sonores</li>
+          <li>🏅 Système de badges (Achievements)</li>
+          <li>📊 Statistiques personnelles</li>
+          <li>🌙 Thème clair / sombre</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
   <footer>
-    <p><span>PIXELWAVE</span> &nbsp;•&nbsp; Fait avec ♥ pour les gamers &nbsp;•&nbsp; 2025</p>
+    <p>
+      <span>PIXELWAVE</span>
+      &nbsp;•&nbsp; Fait avec ♥ pour les gamers
+      &nbsp;•&nbsp; <a href="bugs.html" style="color:#ff3cac;text-decoration:none">🐛 Signaler un bug</a>
+      &nbsp;•&nbsp; 2026
+    </p>
   </footer>
 
   <script src="main.js"></script>
