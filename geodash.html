@@ -44,7 +44,18 @@
     /* progress bar */
     .prog-wrap{width:100%;max-width:480px;height:6px;background:var(--border);border-radius:999px;overflow:hidden}
     .prog-fill{height:100%;background:linear-gradient(90deg,#ff6b35,#ffe44e);border-radius:999px;transition:width .1s linear;width:0%}
-  </style>
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
+</style>
+  <script>
+    // Appliquer le thème sauvegardé immédiatement
+    (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 <body>
   <div class="top-bar">
@@ -97,23 +108,27 @@
     /* ── Constants ── */
     const GROUND  = H - 50;
     const CUBE_S  = 32;
-    const GRAVITY = 0.55;
-    const JUMP_V  = -11.5;
-    const SCROLL  = 4.5;
+    const GRAVITY = 0.50;
+    const JUMP_V  = -11.0;
+    const SCROLL  = 3.0;  // Réduit : était 4.5
 
     /* ── Level data (obstacle types: 0=spike, 1=block, 2=tall) ── */
     /* Each level is an array of [x_offset, type] pairs */
     function buildLevel(seed) {
       const obs = [];
-      let x = 400;
+      let x = 500;
       const rng = lcg(seed);
-      const count = 30 + seed * 8;
+      const count = 20 + seed * 5;
       for (let i = 0; i < count; i++) {
-        const type = Math.floor(rng() * 3);
-        obs.push({ x, type, w: type===2?32:24, h: type===0?28:type===1?32:52 });
-        x += 120 + Math.floor(rng() * 120);
+        // Niveau 1 : surtout spikes simples, pas de tall blocks
+        const maxType = Math.min(2, Math.floor(seed * 0.7));
+        const type = Math.floor(rng() * (maxType + 1));
+        // Hauteur réduite pour les blocs
+        const h = type===0 ? 24 : type===1 ? 30 : 44;
+        obs.push({ x, type, w: type===2?30:22, h });
+        // Plus d'espace entre les obstacles : 180-300px au lieu de 120-240px
+        x += 180 + Math.floor(rng() * 180);
       }
-      // End portal
       obs.push({ x, type:'end', w:30, h:60 });
       return { obs, totalLen: x + 200 };
     }
@@ -407,5 +422,26 @@
       window.PixelWave.init('geodash', '#ff6b35');
     });
   </script>
+
+    // ── Pseudo modal avant le 1er jeu (overlay btn) ──
+    (function(){
+      var _ovBtn = document.getElementById('ovBtn') || document.getElementById('newBtn');
+      if (!_ovBtn) return;
+      var _firstPlay = true;
+      var _orig = _ovBtn.cloneNode(true);
+      _ovBtn.parentNode.replaceChild(_orig, _ovBtn);
+      _orig.addEventListener('click', function(e){
+        if (_firstPlay && !localStorage.getItem('pw_pseudo')) {
+          _firstPlay = false;
+          e.stopImmediatePropagation();
+          window.PixelWave.promptPseudo('geodash', function(){
+            _orig.click();
+          });
+        } else {
+          _firstPlay = false;
+        }
+      }, true);
+    })();
+
 </body>
 </html>
