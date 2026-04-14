@@ -2,10 +2,17 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>PixelWave — Joue maintenant</title>
   <link rel="stylesheet" href="style.css" />
   <meta name="google-site-verification" content="h9Vq-qmq-8eekdE0RTIX8DzxmztgvLF30dBKJP1GlCE" />
+  <script>
+    // Appliquer le thème immédiatement avant le rendu pour éviter le flash
+    (function(){
+      var t = localStorage.getItem('pw_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
   <script type="module">
     import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
@@ -26,8 +33,8 @@
       const userInfo = document.getElementById('userInfo');
       onAuthStateChanged(auth, user => {
         if (user) {
-          btn.textContent = '🚪 Déconnexion';
-          userInfo.innerHTML = `<img src="${user.photoURL}" width="32" style="border-radius:50%;vertical-align:middle;margin-right:6px">${user.displayName.split(' ')[0]}`;
+          btn.textContent = '🚪 Déco';
+          userInfo.innerHTML = `<img src="${user.photoURL}" width="28" style="border-radius:50%;vertical-align:middle;margin-right:5px">${user.displayName.split(' ')[0]}`;
         } else {
           btn.textContent = '🎮 Connexion';
           userInfo.innerHTML = '';
@@ -41,6 +48,7 @@
   </script>
 </head>
 <body>
+  <!-- ── Header ── -->
   <header>
     <div class="logo">PIXEL<span style="color:#ff3cac;-webkit-text-fill-color:#ff3cac">WAVE</span></div>
     <nav>
@@ -52,17 +60,21 @@
       <span class="icon">🔍</span>
       <input id="searchInput" type="text" placeholder="Chercher un jeu…" />
     </div>
-    <div class="auth">
+    <div class="auth" style="display:flex;align-items:center;gap:.6rem">
+      <!-- Bouton thème -->
+      <button id="themeToggleHeader" onclick="toggleTheme()" class="retro-btn" style="font-size:.55rem;padding:.45rem .8rem">🌙</button>
       <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
       <span id="userInfo" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.9rem;color:#e8e8ff"></span>
     </div>
   </header>
 
+  <!-- ── Hero ── -->
   <section class="hero">
     <h1>JOUE GRATUITEMENT<br>DIRECTEMENT DANS TON NAVIGATEUR</h1>
     <p>Des dizaines de jeux rétro &amp; modernes — sans téléchargement.</p>
   </section>
 
+  <!-- ── Category chips ── -->
   <div class="categories">
     <button class="chip active" data-filter="all">🕹️ Tous</button>
     <button class="chip" data-filter="arcade">🚀 Arcade</button>
@@ -70,71 +82,73 @@
     <button class="chip" data-filter="puzzle">🧩 Puzzle</button>
   </div>
 
+  <!-- ── Game section ── -->
   <p class="section-title">JEUX POPULAIRES</p>
   <div class="game-grid" id="gameGrid"></div>
 
-  <!-- ════════════════════════
+  <!-- ═══════════════════════════
        CHANGELOG
-  ════════════════════════ -->
+  ═══════════════════════════ -->
   <section class="changelog-section" id="changelog">
     <p class="section-title">📋 MISES À JOUR</p>
     <div class="changelog-grid">
 
       <div class="changelog-card current">
         <div class="cl-header">
-          <span class="cl-version">v3.0</span>
+          <span class="cl-version">v4.0</span>
           <span class="cl-date">Avril 2026</span>
           <span class="cl-badge badge-current">ACTUELLE</span>
         </div>
         <ul class="cl-list">
-          <li>🐛 Correction double enregistrement des scores</li>
-          <li>🐤 Flappy Bird : reset après game over, anti-zoom mobile</li>
-          <li>⛶ Bouton Plein Écran sur tous les jeux</li>
-          <li>👤 Pseudo aléatoire si vide (ex: EpicPlayer342)</li>
-          <li>🔷 Nouveau : Geometry Dash</li>
-          <li>🦕 Nouveau : Dino Runner</li>
-          <li>🔢 Nouveau : 2048</li>
-          <li>🐛 Page Signalement de Bugs</li>
-          <li>🔥 Données Firebase Firestore (scores + avis partagés)</li>
+          <li>🌙 Thème sombre / ☀️ clair sur tout le site</li>
+          <li>👤 Modal pseudo visible avant le 1er score</li>
+          <li>🔢 Noms auto : Player 1, Player 2… sans doublon</li>
+          <li>📊 Stats personnelles par jeu (parties, meilleur, moyenne)</li>
+          <li>⛶ Plein écran stable — plus de sortie accidentelle par swipe</li>
+          <li>📱 Anti-zoom iPad/Safari sur tous les jeux</li>
+          <li>📨 Bug reports affichés en temps réel depuis Firebase</li>
+          <li>🦕 Dino Runner : vitesse réduite, plus accessible</li>
+          <li>🔷 Geometry Dash : vitesse et difficulté réduites</li>
         </ul>
       </div>
 
       <div class="changelog-card">
         <div class="cl-header">
-          <span class="cl-version">v2.0</span>
+          <span class="cl-version">v3.0</span>
           <span class="cl-date">Mars 2026</span>
         </div>
         <ul class="cl-list">
-          <li>🃏 Memory Cards (3 difficultés)</li>
-          <li>🌍 Quiz Capitales du Monde</li>
-          <li>⭐ Avis avec étoiles sur chaque jeu</li>
-          <li>🏆 Leaderboard par jeu</li>
-          <li>🏫 Mode Classe avec pseudo</li>
-          <li>🔐 Connexion Google</li>
-          <li>🏳️ Drapeaux Afrique</li>
+          <li>🔷 Nouveau : Geometry Dash</li>
+          <li>🦕 Nouveau : Dino Runner</li>
+          <li>🔢 Nouveau : 2048</li>
+          <li>⛶ Bouton Plein Écran sur tous les jeux</li>
+          <li>🐛 Page Signalement de Bugs</li>
+          <li>🔥 Firebase Firestore (scores + avis partagés)</li>
+          <li>🐤 Flappy Bird : reset après game over corrigé</li>
         </ul>
       </div>
 
       <div class="changelog-card next">
         <div class="cl-header">
-          <span class="cl-version">v4.0</span>
+          <span class="cl-version">v5.0</span>
           <span class="cl-date">Bientôt</span>
           <span class="cl-badge badge-next">PROCHAINEMENT</span>
         </div>
         <ul class="cl-list">
           <li>♟️ Échecs contre l'IA</li>
-          <li>🎯 Drapeaux Asie &amp; Amériques</li>
           <li>🧩 Sudoku interactif</li>
-          <li>🔊 Effets sonores</li>
+          <li>🔊 Effets sonores sur tous les jeux</li>
           <li>🏅 Système de badges (Achievements)</li>
-          <li>📊 Statistiques personnelles</li>
-          <li>🌙 Thème clair / sombre</li>
+          <li>📈 Graphiques de progression</li>
+          <li>🌍 Drapeaux Asie &amp; Amériques</li>
+          <li>🎮 Profil joueur avec historique</li>
         </ul>
       </div>
 
     </div>
   </section>
 
+  <!-- ── Footer ── -->
   <footer>
     <p>
       <span>PIXELWAVE</span>
@@ -144,6 +158,23 @@
     </p>
   </footer>
 
+  <script>
+    // Thème toggle depuis le header
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const newTheme = isDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('pw_theme', newTheme);
+      const btn = document.getElementById('themeToggleHeader');
+      if (btn) btn.textContent = isDark ? '🌙' : '☀️';
+    }
+    // Sync bouton au chargement
+    window.addEventListener('DOMContentLoaded', function(){
+      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const btn = document.getElementById('themeToggleHeader');
+      if (btn) btn.textContent = isDark ? '🌙' : '☀️';
+    });
+  </script>
   <script src="main.js"></script>
 </body>
 </html>
