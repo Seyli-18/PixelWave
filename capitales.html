@@ -2,12 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>PixelWave — Quiz Capitales</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="shared.css"/>
   <style>
+    html{touch-action:manipulation}
+    
     :root{
       --bg:#0a0a1a;--card:#12122a;--border:#1e1e4a;
       --accent:#00f0ff;--good:#00ff88;--bad:#ff3c3c;--accent3:#ffe44e;
@@ -85,7 +87,18 @@
 
     .divider{width:100%;max-width:640px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
     @media(max-width:400px){.answer-grid{grid-template-columns:1fr}}
-  </style>
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
+</style>
+  <script>
+    // Appliquer le thème sauvegardé immédiatement
+    (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
 <body>
   <div class="top-bar">
@@ -321,6 +334,20 @@
   <script>
     window.addEventListener('DOMContentLoaded', () => { window.PixelWave.initFullscreen('questionCard', 'fsBtn');
       window.PixelWave.init('capitales', '#00f0ff'); });
+  </script>
+  <script>
+    // ── Pseudo modal au 1er chargement du quiz ──
+    (function(){
+      if (!localStorage.getItem('pw_pseudo')) {
+        // Attendre que shared.js soit chargé
+        var _interval = setInterval(function(){
+          if (window.PixelWave && window.PixelWave.promptPseudo) {
+            clearInterval(_interval);
+            window.PixelWave.promptPseudo('capitales', function(){});
+          }
+        }, 100);
+      }
+    })();
   </script>
 </body>
 </html>
