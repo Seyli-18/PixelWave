@@ -464,7 +464,7 @@
     // Hook into game over to submit score
     const _origGameOver = typeof gameOver !== 'undefined' ? gameOver : null;
   </script>
-  <script>
+
     // ── Pseudo modal avant le 1er start ──
     (function(){
       var _origStartBtn = document.getElementById('startBtn');
@@ -487,6 +487,6 @@
         }
       }, true); // capture phase = before game listener
     })();
-  </script>
+
 </body>
 </html>
