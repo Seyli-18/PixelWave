@@ -1,5 +1,5 @@
 /* ===========================
-   PIXELWAVE — main.js  v3
+   PIXELWAVE — main.js  v4
    =========================== */
 
 const games = [
@@ -73,6 +73,10 @@ function initChips() {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
+  // Appliquer le thème sauvegardé
+  var t = localStorage.getItem('pw_theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+
   renderGrid();
   initChips();
   var s = document.getElementById('searchInput');
