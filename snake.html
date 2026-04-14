@@ -215,7 +215,10 @@
   <!-- Nav -->
   <div class="top-bar">
     <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
-    <a href="index.html" class="back-btn">← RETOUR</a>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="index.html" class="back-btn">← RETOUR</a>
+    </div>
   </div>
 
   <div class="game-wrapper">
@@ -389,7 +392,6 @@
       msgEl.textContent = `GAME OVER — SCORE ${score} — APPUIE SUR RESET`;
       msgEl.style.color = '#ff3cac';
       if (window.PixelWave && window.PixelWave.submitScore) window.PixelWave.submitScore(score);
-      if (window.PixelWave && window.PixelWave.submitScoreAnon) window.PixelWave.submitScoreAnon(score);
     }
 
     /* ── Controls ── */
@@ -446,6 +448,7 @@
   <script src="shared.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
+      window.PixelWave.initFullscreen('gameCanvas', 'fsBtn');
       window.PixelWave.init('snake', '#00ff88');
     });
     // Hook into game over to submit score
