@@ -522,34 +522,38 @@ footer span {
     height: 65vh;
   }
 }
-/* ═══════════════════════════════════
+/* ══════════════════════════════════════
    THÈME CLAIR
-═══════════════════════════════════ */
+══════════════════════════════════════ */
 [data-theme="light"] {
-  --bg:          #eeeeff;
-  --bg2:         #e0e0f8;
-  --card-bg:     #ffffff;
-  --border:      #c0c0e0;
-  --text:        #1a1a3a;
-  --text-muted:  #5050a0;
+  --bg:         #eeeeff;
+  --bg2:        #e4e4f8;
+  --card-bg:    #ffffff;
+  --border:     #c8c8e8;
+  --text:       #1a1a3a;
+  --text-muted: #5050a0;
 }
-[data-theme="light"] body { background: #eeeeff; color: #1a1a3a; }
-[data-theme="light"] body::before { opacity:.04; }
-[data-theme="light"] header { background: rgba(240,240,255,.95); border-bottom-color: #c0c0e0; }
-[data-theme="light"] .game-card { background: #fff; border-color: #d0d0ee; color: #1a1a3a; }
-[data-theme="light"] .game-card:hover { border-color: var(--accent1); }
-[data-theme="light"] .card-body h3 { color: #1a1a3a; }
-[data-theme="light"] .card-body p  { color: #5050a0; }
-[data-theme="light"] .tag { background: #e0e0f0; color: #5050a0; }
-[data-theme="light"] nav a { color: #5050a0; }
-[data-theme="light"] .search-wrap input { background:#fff; border-color:#c0c0e0; color:#1a1a3a; }
-[data-theme="light"] .chip { background:#fff; border-color:#c0c0e0; color:#5050a0; }
-[data-theme="light"] footer { border-top-color:#c0c0e0; color:#5050a0; }
-[data-theme="light"] .hero h1 { filter: drop-shadow(0 0 10px #00a0ff); }
+[data-theme="light"] body                { background:#eeeeff; color:#1a1a3a; }
+[data-theme="light"] body::before        { opacity:.04; }
+[data-theme="light"] body::after         { opacity:.3; }
+[data-theme="light"] header              { background:rgba(238,238,255,.96); border-bottom-color:#c8c8e8; }
+[data-theme="light"] .game-card         { background:#fff; border-color:#d0d0ee; color:#1a1a3a; }
+[data-theme="light"] .card-body h3      { color:#1a1a3a; }
+[data-theme="light"] .card-body p       { color:#5050a0; }
+[data-theme="light"] .tag               { background:#e8e8f8; color:#5050a0; }
+[data-theme="light"] nav a              { color:#5050a0; }
+[data-theme="light"] .search-wrap input { background:#fff; border-color:#c8c8e8; color:#1a1a3a; }
+[data-theme="light"] .chip              { background:#fff; border-color:#c8c8e8; color:#5050a0; }
+[data-theme="light"] .chip.active       { border-color:var(--accent1); color:var(--accent1); }
+[data-theme="light"] .section-title     { color:#c07800; }
+[data-theme="light"] footer             { border-top-color:#c8c8e8; color:#5050a0; }
+[data-theme="light"] .changelog-card   { background:#fff; border-color:#c8c8e8; }
+[data-theme="light"] .cl-list li       { color:#5050a0; }
+[data-theme="light"] .changelog-card.current .cl-list li { color:#303080; }
 
-/* ═══════════════════════════════════
-   CARD BACKGROUNDS (nouveaux jeux)
-═══════════════════════════════════ */
+/* ══════════════════════════════════════
+   NOUVEAUX BACKGROUNDS CARTES
+══════════════════════════════════════ */
 .card-thumb.geodash-bg   { background: linear-gradient(135deg, #2a1000, #3a1800); }
 .card-thumb.dino-bg      { background: linear-gradient(135deg, #0a2a0a, #153a10); }
 .card-thumb.2048-bg      { background: linear-gradient(135deg, #2a2000, #3a3000); }
@@ -559,12 +563,42 @@ footer span {
 .card-thumb.tetris-bg    { background: linear-gradient(135deg, #001a2a, #002a4a); }
 .card-thumb.breakout-bg  { background: linear-gradient(135deg, #2a1000, #4a2000); }
 
-/* ═══════════════════════════════════
-   CHANGELOG SECTION
-═══════════════════════════════════ */
+/* ══════════════════════════════════════
+   MOBILE / RESPONSIVE AMÉLIORATIONS
+══════════════════════════════════════ */
+/* Empêcher le zoom sur double-tap */
+* { touch-action: pan-x pan-y; }
+button, a, input, select, textarea { touch-action: manipulation; }
+
+/* Header mobile */
+@media (max-width: 700px) {
+  header        { padding: 0 .8rem; gap: .5rem; height: auto; min-height: 56px; flex-wrap: wrap; padding-top: .5rem; padding-bottom: .5rem; }
+  .logo         { font-size: .6rem; }
+  nav           { display: none; }
+  .search-wrap  { flex: 1; min-width: 120px; }
+  .search-wrap input { width: 100%; font-size: .85rem; }
+  .auth         { gap: .4rem; }
+  .retro-btn    { font-size: .5rem; padding: .4rem .6rem; }
+  #userInfo     { display: none; }
+}
+
+@media (max-width: 480px) {
+  .game-grid    { grid-template-columns: 1fr 1fr !important; gap: .75rem; padding: 0 .75rem 3rem; }
+  .hero         { padding: 2.5rem 1rem 2rem; }
+  .hero h1      { font-size: clamp(.75rem, 2.5vw, 1.4rem); }
+  .categories   { padding: 0 .75rem 1.5rem; gap: .5rem; }
+  .chip         { font-size: .75rem; padding: .3rem .75rem; }
+  .section-title { padding: 0 .75rem 1.2rem; font-size: .6rem; }
+  .changelog-section { padding: 0 .75rem 3rem; }
+  .changelog-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════
+   CHANGELOG
+══════════════════════════════════════ */
 .changelog-section { position:relative;z-index:1;padding:0 2rem 5rem;width:100%; }
-.changelog-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto; }
-.changelog-card { background:var(--card-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s; }
+.changelog-grid    { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto; }
+.changelog-card    { background:var(--card-bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s; }
 .changelog-card:hover { border-color:#2e2e5a; }
 .changelog-card.current { border-color:var(--accent1);box-shadow:0 0 20px #00f0ff11; }
 .changelog-card.next    { border-color:var(--accent3);box-shadow:0 0 20px #ffe44e11; }
@@ -577,9 +611,9 @@ footer span {
 .cl-list { padding:1rem 1.2rem;list-style:none;display:flex;flex-direction:column;gap:.6rem; }
 .cl-list li { font-family:var(--font-body);font-size:.9rem;color:var(--text-muted);line-height:1.5; }
 .changelog-card.current .cl-list li { color:#b0b0d8; }
-.changelog-card.next .cl-list li    { color:#a0a060; }
+.changelog-card.next    .cl-list li { color:#a0a060; }
 
-@media(max-width:600px){
-  .changelog-section{padding:0 1rem 3rem;}
-  .changelog-grid{grid-template-columns:1fr;}
+@media(max-width:600px) {
+  .changelog-section { padding: 0 .75rem 3rem; }
+  .changelog-grid    { grid-template-columns: 1fr; }
 }
