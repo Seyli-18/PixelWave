@@ -2,76 +2,78 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PixelWave — Joue maintenant</title>
   <link rel="stylesheet" href="style.css" />
-  <meta name="google-site-verification" content="h9Vq-qmq-8eekdE0RTIX8DzxmztgvLF30dBKJP1GlCE" />
-  <script>
-    // Appliquer le thème immédiatement avant le rendu pour éviter le flash
-    (function(){
-      var t = localStorage.getItem('pw_theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', t);
-    })();
-  </script>
   <script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
-      from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-    const cfg = {
-      apiKey:"AIzaSyDccH-NoPxlJJAmBYq_xoYE0f7_IFZvTlE",
-      authDomain:"pixelwave-1dd12.firebaseapp.com",
-      projectId:"pixelwave-1dd12",
-      storageBucket:"pixelwave-1dd12.firebasestorage.app",
-      messagingSenderId:"643733344941",
-      appId:"1:643733344941:web:5d55206f213c55c52bec24"
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } 
+    from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDccH-NoPxlJJAmBYq_xoYE0f7_IFZvTlE",
+      authDomain: "pixelwave-1dd12.firebaseapp.com",
+      projectId: "pixelwave-1dd12",
+      storageBucket: "pixelwave-1dd12.firebasestorage.app",
+      messagingSenderId: "643733344941",
+      appId: "1:643733344941:web:5d55206f213c55c52bec24",
+      measurementId: "G-WHG2T4QYZR"
     };
-    const app  = getApps().length ? getApps()[0] : initializeApp(cfg);
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // 🔐 Google Auth
     const auth = getAuth(app);
-    const prov = new GoogleAuthProvider();
-    window.addEventListener('DOMContentLoaded', () => {
-      const btn      = document.getElementById('googleSignIn');
-      const userInfo = document.getElementById('userInfo');
-      onAuthStateChanged(auth, user => {
-        if (user) {
-          btn.textContent = '🚪 Déco';
-          userInfo.innerHTML = `<img src="${user.photoURL}" width="28" style="border-radius:50%;vertical-align:middle;margin-right:5px">${user.displayName.split(' ')[0]}`;
-        } else {
-          btn.textContent = '🎮 Connexion';
-          userInfo.innerHTML = '';
-        }
-      });
-      btn.addEventListener('click', () => {
-        if (auth.currentUser) signOut(auth);
-        else signInWithPopup(auth, prov).catch(console.error);
-      });
+    const provider = new GoogleAuthProvider();
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("googleSignIn");
+      const userInfo = document.getElementById("userInfo");
+
+    btn.addEventListener("click", () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+
+          userInfo.innerHTML = `
+            <img src="${user.photoURL}" width="40" style="border-radius:50%"><br>
+            👾 ${user.displayName}
+          `;
+        })
+        .catch((error) => {
+          console.error(error);
+          alert(error.message);
+        });
     });
-  </script>
+  });
+</script>
+<meta name="google-site-verification" content="h9Vq-qmq-8eekdE0RTIX8DzxmztgvLF30dBKJP1GlCE" />
 </head>
 <body>
   <!-- ── Header ── -->
   <header>
     <div class="logo">PIXEL<span style="color:#ff3cac;-webkit-text-fill-color:#ff3cac">WAVE</span></div>
     <nav>
-      <a href="index.html">Accueil</a>
-      <a href="#changelog">Mises à jour</a>
-      <a href="bugs.html">🐛 Bugs</a>
+      <a href="#">Accueil</a>
+      <a href="#">Top Jeux</a>
+      <a href="#">Nouveautés</a>
     </nav>
     <div class="search-wrap">
       <span class="icon">🔍</span>
       <input id="searchInput" type="text" placeholder="Chercher un jeu…" />
     </div>
-    <div class="auth" style="display:flex;align-items:center;gap:.6rem">
-      <!-- Bouton thème -->
-      <button id="themeToggleHeader" onclick="toggleTheme()" class="retro-btn" style="font-size:.55rem;padding:.45rem .8rem">🌙</button>
+    <div class="auth">
       <button id="googleSignIn" class="retro-btn">🎮 Connexion</button>
-      <span id="userInfo" style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.9rem;color:#e8e8ff"></span>
+      <p id="userInfo"></p>
     </div>
   </header>
 
   <!-- ── Hero ── -->
   <section class="hero">
     <h1>JOUE GRATUITEMENT<br>DIRECTEMENT DANS TON NAVIGATEUR</h1>
-    <p>Des dizaines de jeux rétro &amp; modernes — sans téléchargement.</p>
+    <p>Des centaines de jeux rétro &amp; modernes — sans téléchargement.</p>
   </section>
 
   <!-- ── Category chips ── -->
@@ -84,97 +86,15 @@
 
   <!-- ── Game section ── -->
   <p class="section-title">JEUX POPULAIRES</p>
-  <div class="game-grid" id="gameGrid"></div>
-
-  <!-- ═══════════════════════════
-       CHANGELOG
-  ═══════════════════════════ -->
-  <section class="changelog-section" id="changelog">
-    <p class="section-title">📋 MISES À JOUR</p>
-    <div class="changelog-grid">
-
-      <div class="changelog-card current">
-        <div class="cl-header">
-          <span class="cl-version">v4.0</span>
-          <span class="cl-date">Avril 2026</span>
-          <span class="cl-badge badge-current">ACTUELLE</span>
-        </div>
-        <ul class="cl-list">
-          <li>🌙 Thème sombre / ☀️ clair sur tout le site</li>
-          <li>👤 Modal pseudo visible avant le 1er score</li>
-          <li>🔢 Noms auto : Player 1, Player 2… sans doublon</li>
-          <li>📊 Stats personnelles par jeu (parties, meilleur, moyenne)</li>
-          <li>⛶ Plein écran stable — plus de sortie accidentelle par swipe</li>
-          <li>📱 Anti-zoom iPad/Safari sur tous les jeux</li>
-          <li>📨 Bug reports affichés en temps réel depuis Firebase</li>
-          <li>🦕 Dino Runner : vitesse réduite, plus accessible</li>
-          <li>🔷 Geometry Dash : vitesse et difficulté réduites</li>
-        </ul>
-      </div>
-
-      <div class="changelog-card">
-        <div class="cl-header">
-          <span class="cl-version">v3.0</span>
-          <span class="cl-date">Mars 2026</span>
-        </div>
-        <ul class="cl-list">
-          <li>🔷 Nouveau : Geometry Dash</li>
-          <li>🦕 Nouveau : Dino Runner</li>
-          <li>🔢 Nouveau : 2048</li>
-          <li>⛶ Bouton Plein Écran sur tous les jeux</li>
-          <li>🐛 Page Signalement de Bugs</li>
-          <li>🔥 Firebase Firestore (scores + avis partagés)</li>
-          <li>🐤 Flappy Bird : reset après game over corrigé</li>
-        </ul>
-      </div>
-
-      <div class="changelog-card next">
-        <div class="cl-header">
-          <span class="cl-version">v5.0</span>
-          <span class="cl-date">Bientôt</span>
-          <span class="cl-badge badge-next">PROCHAINEMENT</span>
-        </div>
-        <ul class="cl-list">
-          <li>♟️ Échecs contre l'IA</li>
-          <li>🧩 Sudoku interactif</li>
-          <li>🔊 Effets sonores sur tous les jeux</li>
-          <li>🏅 Système de badges (Achievements)</li>
-          <li>📈 Graphiques de progression</li>
-          <li>🌍 Drapeaux Asie &amp; Amériques</li>
-          <li>🎮 Profil joueur avec historique</li>
-        </ul>
-      </div>
-
-    </div>
-  </section>
+  <div class="game-grid" id="gameGrid">
+    <!-- Cartes injectées par main.js -->
+  </div>
 
   <!-- ── Footer ── -->
   <footer>
-    <p>
-      <span>PIXELWAVE</span>
-      &nbsp;•&nbsp; Fait avec ♥ pour les gamers
-      &nbsp;•&nbsp; <a href="bugs.html" style="color:#ff3cac;text-decoration:none">🐛 Signaler un bug</a>
-      &nbsp;•&nbsp; 2026
-    </p>
+    <p><span>PIXELWAVE</span> &nbsp;•&nbsp; Fait avec ♥ pour les gamers &nbsp;•&nbsp; 2025</p>
   </footer>
 
-  <script>
-    // Thème toggle depuis le header
-    function toggleTheme() {
-      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      const newTheme = isDark ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('pw_theme', newTheme);
-      const btn = document.getElementById('themeToggleHeader');
-      if (btn) btn.textContent = isDark ? '🌙' : '☀️';
-    }
-    // Sync bouton au chargement
-    window.addEventListener('DOMContentLoaded', function(){
-      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      const btn = document.getElementById('themeToggleHeader');
-      if (btn) btn.textContent = isDark ? '🌙' : '☀️';
-    });
-  </script>
   <script src="main.js"></script>
 </body>
 </html>
