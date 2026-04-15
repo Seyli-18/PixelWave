@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
   <title>PixelWave — Quiz Capitales</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
@@ -332,22 +333,20 @@
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => { window.PixelWave.initFullscreen('questionCard', 'fsBtn');
-      window.PixelWave.init('capitales', '#00f0ff'); });
-  </script>
+    window.addEventListener('DOMContentLoaded', function() {
+      window.PixelWave.initFullscreen('quizArea', 'fsBtn');
+      window.PixelWave.init('capitales', '#00f0ff');
 
-    // ── Pseudo modal au 1er chargement du quiz ──
-    (function(){
+      // Popup pseudo au chargement si pas encore renseigné
       if (!localStorage.getItem('pw_pseudo')) {
-        // Attendre que shared.js soit chargé
-        var _interval = setInterval(function(){
+        var _iv = setInterval(function() {
           if (window.PixelWave && window.PixelWave.promptPseudo) {
-            clearInterval(_interval);
-            window.PixelWave.promptPseudo('capitales', function(){});
+            clearInterval(_iv);
+            window.PixelWave.promptPseudo('capitales', function() {});
           }
         }, 100);
       }
-    })();
-
+    });
+  </script>
 </body>
 </html>
