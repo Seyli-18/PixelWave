@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
   <title>PixelWave — Dino Runner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
@@ -346,34 +347,25 @@
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded',()=>{
-      window.PixelWave.initFullscreen('gameWrap','fsBtn');
-      window.PixelWave.init('dino','#00ff88');
+    window.addEventListener('DOMContentLoaded', function() {
+      window.PixelWave.initFullscreen('gameWrap', 'fsBtn');
+      window.PixelWave.init('dino', '#00ff88');
+
+      // Popup pseudo à chaque clic sur Jouer (si pas encore de pseudo)
+      var _btn = document.getElementById('startBtn');
+      if (_btn) {
+        _btn.addEventListener('click', function(e) {
+          if (!localStorage.getItem('pw_pseudo')) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            window.PixelWave.promptPseudo('dino', function() {
+              // Relancer le clic après validation
+              setTimeout(function() { _btn.click(); }, 50);
+            });
+          }
+        }, true); // capture phase
+      }
     });
   </script>
-
-    // ── Pseudo modal avant le 1er start ──
-    (function(){
-      var _origStartBtn = document.getElementById('startBtn');
-      if (!_origStartBtn) return;
-      var _firstStart = true;
-      var _origClick = null;
-      // Clone pour remplacer (évite les listeners multiples)
-      var _newBtn = _origStartBtn.cloneNode(true);
-      _origStartBtn.parentNode.replaceChild(_newBtn, _origStartBtn);
-      _newBtn.addEventListener('click', function(e){
-        if (_firstStart && !localStorage.getItem('pw_pseudo')) {
-          _firstStart = false;
-          e.stopImmediatePropagation();
-          window.PixelWave.promptPseudo('dino', function(){
-            // Simuler le vrai clic après confirmation
-            _newBtn.click();
-          });
-        } else {
-          _firstStart = false;
-        }
-      }, true); // capture phase = before game listener
-    })();
-
 </body>
 </html>
