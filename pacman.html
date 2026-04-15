@@ -2,13 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
   <title>PixelWave — Pac-Man</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="shared.css"/>
   <style>
-    html{touch-action:manipulation}
+    html { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+    * { -webkit-tap-highlight-color: transparent; }
     
     :root{
       --bg:#0a0a1a;--accent:#ffe44e;--bad:#ff3c3c;
@@ -42,15 +44,14 @@
     .tips{font-family:var(--font-px);font-size:.42rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
     .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
   
-    /* ── Thème clair ── */
-    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
-    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
-    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
-    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
-    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}
-</style>
+    /* ── Thème clair overrides ── */
+    [data-theme="light"] body { background: #eeeeff !important; color: #1a1a3a !important; }
+    [data-theme="light"] .top-bar { background: rgba(238,238,255,.96) !important; border-bottom-color: #c8c8e8 !important; }
+    [data-theme="light"] .back-btn { color: #5050a0 !important; border-color: #c8c8e8 !important; }
+    [data-theme="light"] .fs-btn { color: #5050a0 !important; border-color: #c8c8e8 !important; background: rgba(238,238,255,.8) !important; }
+    [data-theme="light"] h1 { filter: drop-shadow(0 0 8px currentColor) !important; }
+  </style>
   <script>
-    // Appliquer le thème sauvegardé immédiatement
     (function(){var t=localStorage.getItem('pw_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
   </script>
 </head>
@@ -465,33 +466,25 @@
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', function() {
+      window.PixelWave.initFullscreen('gameCanvas', 'fsBtn');
       window.PixelWave.init('pacman', '#ffe44e');
+
+      // Popup pseudo à chaque clic sur Jouer (si pas encore de pseudo)
+      var _btn = document.getElementById('startBtn');
+      if (_btn) {
+        _btn.addEventListener('click', function(e) {
+          if (!localStorage.getItem('pw_pseudo')) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            window.PixelWave.promptPseudo('pacman', function() {
+              // Relancer le clic après validation
+              setTimeout(function() { _btn.click(); }, 50);
+            });
+          }
+        }, true); // capture phase
+      }
     });
   </script>
-
-    // ── Pseudo modal avant le 1er start ──
-    (function(){
-      var _origStartBtn = document.getElementById('startBtn');
-      if (!_origStartBtn) return;
-      var _firstStart = true;
-      var _origClick = null;
-      // Clone pour remplacer (évite les listeners multiples)
-      var _newBtn = _origStartBtn.cloneNode(true);
-      _origStartBtn.parentNode.replaceChild(_newBtn, _origStartBtn);
-      _newBtn.addEventListener('click', function(e){
-        if (_firstStart && !localStorage.getItem('pw_pseudo')) {
-          _firstStart = false;
-          e.stopImmediatePropagation();
-          window.PixelWave.promptPseudo('pacman', function(){
-            // Simuler le vrai clic après confirmation
-            _newBtn.click();
-          });
-        } else {
-          _firstStart = false;
-        }
-      }, true); // capture phase = before game listener
-    })();
-
 </body>
 </html>
