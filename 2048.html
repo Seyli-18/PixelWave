@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
   <title>PixelWave — 2048</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
@@ -269,31 +270,25 @@
 
   <script src="shared.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded',()=>{
-      window.PixelWave.initFullscreen('boardWrap','fsBtn');
-      window.PixelWave.init('2048','#ffe44e');
+    window.addEventListener('DOMContentLoaded', function() {
+      window.PixelWave.initFullscreen('boardWrap', 'fsBtn');
+      window.PixelWave.init('2048', '#ffe44e');
+
+      // Popup pseudo à chaque clic sur Jouer (si pas encore de pseudo)
+      var _btn = document.getElementById('newBtn');
+      if (_btn) {
+        _btn.addEventListener('click', function(e) {
+          if (!localStorage.getItem('pw_pseudo')) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            window.PixelWave.promptPseudo('2048', function() {
+              // Relancer le clic après validation
+              setTimeout(function() { _btn.click(); }, 50);
+            });
+          }
+        }, true); // capture phase
+      }
     });
   </script>
-
-    // ── Pseudo modal avant le 1er jeu (overlay btn) ──
-    (function(){
-      var _ovBtn = document.getElementById('ovBtn') || document.getElementById('newBtn');
-      if (!_ovBtn) return;
-      var _firstPlay = true;
-      var _orig = _ovBtn.cloneNode(true);
-      _ovBtn.parentNode.replaceChild(_orig, _ovBtn);
-      _orig.addEventListener('click', function(e){
-        if (_firstPlay && !localStorage.getItem('pw_pseudo')) {
-          _firstPlay = false;
-          e.stopImmediatePropagation();
-          window.PixelWave.promptPseudo('2048', function(){
-            _orig.click();
-          });
-        } else {
-          _firstPlay = false;
-        }
-      }, true);
-    })();
-
 </body>
 </html>
