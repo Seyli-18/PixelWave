@@ -1,0 +1,43 @@
+:root{
+      --bg:#0a0a1a;--accent:#ff6b35;--bad:#ff3c3c;
+      --text:#e8e8ff;--muted:#7070a0;--border:#1e1e4a;
+      --font-px:'Press Start 2P',monospace;--font-b:'Rajdhani',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{touch-action:manipulation}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 4px);pointer-events:none;z-index:9999}
+    .top-bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,10,26,.9);backdrop-filter:blur(10px);position:sticky;top:0;z-index:100}
+    .logo{font-family:var(--font-px);font-size:.65rem;background:linear-gradient(90deg,#00f0ff,#ff3cac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 6px #00f0ff)}
+    .top-right{display:flex;align-items:center;gap:.6rem}
+    .back-btn{font-family:var(--font-px);font-size:.5rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:.5rem .9rem;border-radius:6px;transition:all .2s}
+    .back-btn:hover{color:#00f0ff;border-color:#00f0ff;box-shadow:0 0 10px #00f0ff55}
+    .game-area{display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem 2rem;gap:1rem;width:100%}
+    h1{font-family:var(--font-px);font-size:.78rem;color:var(--accent);text-shadow:0 0 20px var(--accent);letter-spacing:3px}
+    .stats{display:flex;gap:2rem;font-family:var(--font-px);font-size:.52rem;letter-spacing:2px;text-align:center}
+    .stat-label{color:var(--muted);display:block;margin-bottom:.35rem}
+    .stat-val{font-size:.8rem;color:var(--accent)}
+    #gameWrap{position:relative;width:480px;max-width:100%}
+    #gameCanvas{border:2px solid #ff6b3544;border-radius:8px;box-shadow:0 0 30px #ff6b3522;background:#000;display:block;width:100%;-webkit-touch-callout:none}
+    #overlay{position:absolute;inset:0;border-radius:8px;background:rgba(0,0,0,.75);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+    #overlay.hidden{display:none}
+    .ov-title{font-family:var(--font-px);font-size:.6rem;color:var(--accent);text-shadow:0 0 12px var(--accent);text-align:center;letter-spacing:2px;line-height:2}
+    .ov-score{font-family:var(--font-px);font-size:1.2rem;color:#fff}
+    .ov-pct{font-family:var(--font-px);font-size:.5rem;color:#ffe44e;letter-spacing:1px}
+    .ov-btn{font-family:var(--font-px);font-size:.5rem;letter-spacing:2px;padding:.7rem 1.6rem;border:2px solid var(--accent);border-radius:8px;background:transparent;color:var(--accent);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+    .ov-btn:hover,.ov-btn:active{background:var(--accent);color:#000;box-shadow:0 0 20px var(--accent)}
+    .tap-area{width:100%;max-width:480px;height:60px;background:#12122a;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .1s;margin-top:.3rem}
+    .tap-area:active{background:#ff6b3522}
+    .tap-label{font-family:var(--font-px);font-size:.5rem;color:var(--muted);letter-spacing:2px;pointer-events:none}
+    .tips{font-family:var(--font-px);font-size:.4rem;color:var(--muted);letter-spacing:1px;text-align:center;line-height:2.2}
+    .divider{width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0}
+    /* progress bar */
+    .prog-wrap{width:100%;max-width:480px;height:6px;background:var(--border);border-radius:999px;overflow:hidden}
+    .prog-fill{height:100%;background:linear-gradient(90deg,#ff6b35,#ffe44e);border-radius:999px;transition:width .1s linear;width:0%}
+  
+    /* ── Thème clair ── */
+    [data-theme="light"] body{background:#eeeeff!important;color:#1a1a3a!important}
+    [data-theme="light"] .top-bar{background:rgba(240,240,255,.95)!important;border-bottom-color:#c0c0e0!important}
+    [data-theme="light"] .back-btn,.fs-btn{color:#5050a0!important;border-color:#c0c0e0!important}
+    [data-theme="light"] .section-card,.form-card{background:#fff!important;border-color:#d0d0e0!important}
+    [data-theme="light"] h1{filter:drop-shadow(0 0 10px currentColor)}

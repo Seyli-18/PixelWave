@@ -1,0 +1,214 @@
+html { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+    * { -webkit-tap-highlight-color: transparent; }
+    
+    /* =====================
+       SNAKE — styles.css
+       ===================== */
+    :root {
+      --bg:      #0a0a1a;
+      --board:   #0d1f0d;
+      --accent:  #00ff88;
+      --accent2: #ff3cac;
+      --accent3: #ffe44e;
+      --text:    #e8e8ff;
+      --muted:   #7070a0;
+      --font-px: 'Press Start 2P', monospace;
+      --font-b:  'Rajdhani', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-b);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.15) 2px, rgba(0,0,0,.15) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Nav ── */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #1e1e4a;
+      background: rgba(10,10,26,.9);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: var(--font-px);
+      font-size: .65rem;
+      background: linear-gradient(90deg, #00f0ff, #ff3cac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 6px #00f0ff);
+    }
+
+    .back-btn {
+      font-family: var(--font-px);
+      font-size: .5rem;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid #1e1e4a;
+      padding: .5rem .9rem;
+      border-radius: 6px;
+      transition: all .2s;
+      letter-spacing: 1px;
+    }
+    .back-btn:hover { color: #00f0ff; border-color: #00f0ff; box-shadow: 0 0 10px #00f0ff55; }
+
+    /* ── Game layout ── */
+    .game-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 3rem;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .game-title {
+      font-family: var(--font-px);
+      font-size: 1rem;
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--accent);
+      letter-spacing: 3px;
+      text-align: center;
+    }
+
+    /* ── Score bar ── */
+    .score-bar {
+      display: flex;
+      gap: 2rem;
+      font-family: var(--font-px);
+      font-size: .55rem;
+      letter-spacing: 2px;
+    }
+    .score-item { text-align: center; }
+    .score-label { color: var(--muted); display: block; margin-bottom: .4rem; }
+    .score-val   { color: var(--accent3); font-size: .85rem; }
+
+    /* ── Canvas ── */
+    #gameCanvas {
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 0 30px #00ff8844, 0 0 60px #00ff8822;
+      background: var(--board);
+      display: block;
+    }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      font-family: var(--font-px);
+      font-size: .5rem;
+      letter-spacing: 2px;
+      padding: .7rem 1.5rem;
+      border: 2px solid;
+      border-radius: 8px;
+      cursor: pointer;
+      background: transparent;
+      transition: all .2s;
+    }
+
+    .btn-start {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn-start:hover {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .btn-reset {
+      color: var(--accent2);
+      border-color: var(--accent2);
+    }
+    .btn-reset:hover {
+      background: var(--accent2);
+      color: #fff;
+      box-shadow: 0 0 20px var(--accent2);
+    }
+
+    /* ── D-pad (mobile) ── */
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(3, 48px);
+      gap: 4px;
+    }
+
+    .dpad-btn {
+      background: #12122a;
+      border: 1px solid #1e1e4a;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dpad-btn:active { background: #00ff8833; }
+    .dpad-btn.empty  { background: transparent; border: none; pointer-events: none; }
+
+    /* ── Overlay message ── */
+    .overlay-msg {
+      font-family: var(--font-px);
+      font-size: .6rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-align: center;
+      line-height: 1.8;
+      min-height: 2em;
+    }
+
+    /* ── Tips ── */
+    .tips {
+      font-family: var(--font-px);
+      font-size: .42rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-align: center;
+      line-height: 2.2;
+    }
+  
+    /* ── Thème clair overrides ── */
+    [data-theme="light"] body { background: #eeeeff !important; color: #1a1a3a !important; }
+    [data-theme="light"] .top-bar { background: rgba(238,238,255,.96) !important; border-bottom-color: #c8c8e8 !important; }
+    [data-theme="light"] .back-btn { color: #5050a0 !important; border-color: #c8c8e8 !important; }
+    [data-theme="light"] .fs-btn { color: #5050a0 !important; border-color: #c8c8e8 !important; background: rgba(238,238,255,.8) !important; }
+    [data-theme="light"] h1 { filter: drop-shadow(0 0 8px currentColor) !important; }
+
+    .mute-btn{font-family:var(--font-px);font-size:.42rem;letter-spacing:1px;padding:.45rem .65rem;border:1px solid var(--border);border-radius:6px;background:rgba(0,0,0,.4);color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s}
+    .mute-btn:hover{border-color:#ffe44e;color:#ffe44e}
+    .mute-btn.muted{border-color:#ff3c3c;color:#ff3c3c}

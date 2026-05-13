@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
+  <title>PixelWave — Geometry Dash</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../styles/shared.css"/>
+  
+  
+  <link rel="stylesheet" href="../styles/geodash.css"/>
+</head>
+<body>
+  
+  <button id="pauseBtn" type="button">⏸</button>
+<div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div class="top-right">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn" type="button">🔊</button>
+      <button class="fs-btn" id="fsBtn" type="button">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>🔷 GEOMETRY DASH</h1>
+    <div class="stats">
+      <div><span class="stat-label">TENTATIVES</span><span class="stat-val" id="attEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR %</span><span class="stat-val" id="bestEl">0%</span></div>
+      <div><span class="stat-label">NIVEAU</span><span class="stat-val" id="levelEl">1</span></div>
+    </div>
+
+    <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
+
+    <div id="gameWrap">
+      <canvas id="gameCanvas" width="480" height="260"></canvas>
+      <div id="overlay">
+        <div class="ov-title" id="ovTitle">🔷 GEOMETRY DASH</div>
+        <div class="ov-score" id="ovScore" style="display:none"></div>
+        <div class="ov-pct"  id="ovPct"   style="display:none"></div>
+        <button class="ov-btn" id="ovBtn">▶ JOUER</button>
+      </div>
+    </div>
+
+    <div class="tap-area" id="tapArea"><span class="tap-label">APPUIE N'IMPORTE OÙ !</span></div>
+
+    <p class="tips">ESPACE · CLIC · TAP → SAUTER · MAINTENIR = SAUTS RÉPÉTÉS</p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/geodash.js"></script>
+</body>
+</html>

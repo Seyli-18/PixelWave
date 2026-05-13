@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  
+  <title>PixelWave — Snake Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/shared.css"/>
+  
+  
+  <link rel="stylesheet" href="../styles/snake.css"/>
+</head>
+<body>
+
+  
+  <button id="pauseBtn" type="button">⏸</button>
+<!-- Nav -->
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn">🔊</button>
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-wrapper" id="gameStage">
+    <h1 class="game-title">🐍 SNAKE GAME</h1>
+
+    <!-- Score -->
+    <div class="score-bar">
+      <div class="score-item">
+        <span class="score-label">SCORE</span>
+        <span class="score-val" id="score">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">MEILLEUR</span>
+        <span class="score-val" id="bestScore">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">NIVEAU</span>
+        <span class="score-val" id="level">1</span>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <!-- Message -->
+    <p class="overlay-msg" id="msg">APPUIE SUR JOUER !</p>
+
+    <!-- Buttons -->
+    <div class="controls">
+      <button class="btn btn-start" id="playBtn" type="button">▶ JOUER</button>
+    </div>
+
+    <!-- D-pad for mobile -->
+    <div class="dpad">
+      <div class="dpad-btn empty"></div>
+      <button class="dpad-btn" id="up">▲</button>
+      <div class="dpad-btn empty"></div>
+      <button class="dpad-btn" id="left">◀</button>
+      <div class="dpad-btn empty">·</div>
+      <button class="dpad-btn" id="right">▶</button>
+      <div class="dpad-btn empty"></div>
+      <button class="dpad-btn" id="down">▼</button>
+      <div class="dpad-btn empty"></div>
+    </div>
+
+    <p class="tips">
+      CLAVIER : FLÈCHES ou WASD &nbsp;|&nbsp; MOBILE : D-PAD CI-DESSUS<br>
+      CHAQUE 5 POMMES = NIVEAU +1 &amp; VITESSE +
+    </p>
+  </div>
+
+  <div style="width:100%;max-width:520px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/snake.js"></script>
+</body>
+</html>

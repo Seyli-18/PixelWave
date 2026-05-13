@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
+  <title>PixelWave — Memory Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../styles/shared.css"/>
+  
+  
+  <link rel="stylesheet" href="../styles/memory.css"/>
+</head>
+<body>
+  
+  <button id="pauseBtn" type="button">⏸</button>
+<div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn" type="button">🔊</button>
+      <button class="fs-btn" id="fsBtn" type="button">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>🃏 MEMORY CARDS</h1>
+    <div class="stats">
+      <div><span class="stat-label">ESSAIS</span><span class="stat-val" id="movesEl">0</span></div>
+      <div><span class="stat-label">PAIRES</span><span class="stat-val" id="pairsEl">0/0</span></div>
+      <div><span class="stat-label">TEMPS</span><span class="stat-val" id="timerEl">0s</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">—</span></div>
+    </div>
+
+    <div class="diff-row">
+      <button class="diff-btn active" data-diff="easy">4×4 FACILE</button>
+      <button class="diff-btn" data-diff="medium">5×4 MOYEN</button>
+      <button class="diff-btn" data-diff="hard">6×5 DUR</button>
+    </div>
+
+    <div class="card-grid g4" id="cardGrid"></div>
+    <p class="msg" id="msgEl">APPUIE SUR START !</p>
+
+    <div class="controls">
+      <button class="btn btn-start" id="startBtn">▶ START</button>
+      <button class="btn btn-reset" id="resetBtn">↺ RESET</button>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/memory.js"></script>
+</body>
+</html>

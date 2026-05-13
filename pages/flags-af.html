@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  
+  <title>PixelWave — Drapeaux d'Afrique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/shared.css"/>
+
+  <!-- =====================
+       FLAGS — styles.css
+       ===================== -->
+  
+  
+  <link rel="stylesheet" href="../styles/flags-af.css"/>
+</head>
+<body>
+  
+<div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn" type="button">🔊</button>
+      <button class="fs-btn" id="fsBtn" type="button">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="quiz-wrapper">
+    <h1>🏳️ DRAPEAUX D'AFRIQUE</h1>
+
+    <div class="stats">
+      <div><span class="stat-label">QUESTION</span><span class="stat-val" id="qNum">1 / 20</span></div>
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">STREAK</span><span class="stat-val" id="streakEl">0🔥</span></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <div id="quizArea" style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;width:100%">
+      <!-- Flag image -->
+      <div class="flag-box" id="flagBox">
+        <img id="flagImg" src="" alt="Drapeau" />
+        <div class="flag-loader" id="flagLoader">CHARGEMENT…</div>
+      </div>
+
+      <div class="answer-grid" id="answerGrid"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn">SUIVANT →</button>
+    </div>
+
+    <!-- Result screen -->
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title">QUIZ TERMINÉ !</div>
+      <div class="result-score" id="finalScore">—</div>
+      <div style="font-size:1.1rem;color:#7070a0">/ 20 bonnes réponses</div>
+      <div id="medal" style="font-size:4rem;margin:.5rem 0">🏅</div>
+      <button class="restart-btn" id="restartBtn">↺ REJOUER</button>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:640px;height:1px;background:linear-gradient(90deg,transparent,#1e1e4a,transparent);margin:.5rem 0"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <!-- =====================
+       FLAGS — game.js
+       ===================== -->
+  
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/flags-af.js"></script>
+</body>
+</html>

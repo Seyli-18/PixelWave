@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://seyli-18.github.io/PixelWave/sitemap.xml

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <title>PixelWave — Asteroids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../styles/shared.css"/>
+  
+  
+  <link rel="stylesheet" href="../styles/asteroids.css"/>
+</head>
+<body>
+  
+  <button id="pauseBtn" type="button">⏸</button>
+<div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn">🔊</button>
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>☄️ ASTEROIDS</h1>
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">VIES</span><span class="stat-val" id="livesEl">❤️❤️❤️</span></div>
+      <div><span class="stat-label">NIVEAU</span><span class="stat-val" id="levelEl">1</span></div>
+    </div>
+
+    <div id="pwPlaySurface">
+    <canvas id="gameCanvas" width="400" height="480"></canvas>
+    <p class="msg" id="msgEl">APPUIE SUR START !</p>
+
+    <div class="controls">
+      <button class="btn btn-start" id="startBtn">▶ START</button>
+      <button class="btn btn-reset" id="resetBtn">↺ RESET</button>
+    </div>
+
+    <!-- Mobile controls -->
+    <div class="mobile-controls">
+      <div class="dpad-col">
+        <div class="dpad-row">
+          <div style="width:52px"></div>
+          <button class="ctrl-btn" id="btnUp">▲</button>
+          <div style="width:52px"></div>
+        </div>
+        <div class="dpad-row">
+          <button class="ctrl-btn" id="btnLeft">↺</button>
+          <button class="ctrl-btn" id="btnDown" style="font-size:1rem;color:#7070a0">⬇</button>
+          <button class="ctrl-btn" id="btnRight">↻</button>
+        </div>
+      </div>
+      <button class="ctrl-btn fire-btn" id="btnFire">💥</button>
+    </div>
+    </div>
+
+    <p class="tips">
+      ← → TOURNER &nbsp;|&nbsp; ↑ PROPULSION &nbsp;|&nbsp; ESPACE TIRER<br>
+      DÉTRUIRE LES ASTÉROÏDES, ÉVITER LES DÉBRIS !
+    </p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/asteroids.js"></script>
+</body>
+</html>

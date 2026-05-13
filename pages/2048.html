@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  
+  <title>PixelWave — 2048</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../styles/shared.css"/>
+  
+  
+  <link rel="stylesheet" href="../styles/2048.css"/>
+</head>
+<body>
+  
+<div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div class="top-right">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn">🔊</button>
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>🔢 2048</h1>
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">MOVES</span><span class="stat-val" id="movesEl">0</span></div>
+    </div>
+
+    <div id="boardWrap">
+      <div id="board"></div>
+    </div>
+
+    <p class="msg" id="msgEl"></p>
+    <div class="controls">
+      <button class="btn btn-start" id="newBtn">▶ NOUVEAU JEU</button>
+      <button class="btn btn-reset" id="undoBtn">↩ ANNULER</button>
+    </div>
+    <p class="tips">← → ↑ ↓ CLAVIER &nbsp;|&nbsp; SWIPE SUR MOBILE &nbsp;|&nbsp; COMBINE JUSQU'À 2048 !</p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/2048.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <title>PixelWave — Bloc Blast</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../styles/shared.css"/>
+  
+  
+  <link rel="stylesheet" href="../styles/blocblast.css"/>
+</head>
+<body>
+  
+<div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="mute-btn" id="audioBtn" type="button" title="Réglages audio">🎵</button>
+      <button class="mute-btn" id="muteBtn">🔊</button>
+      <button class="fs-btn" id="fsBtn">⛶ PLEIN ÉCRAN</button>
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="game-area">
+    <h1>💥 BLOC BLAST</h1>
+
+    <div class="stats">
+      <div><span class="stat-label">SCORE</span><span class="stat-val" id="scoreEl">0</span></div>
+      <div><span class="stat-label">MEILLEUR</span><span class="stat-val" id="bestEl">0</span></div>
+      <div><span class="stat-label">LIGNES</span><span class="stat-val" id="linesEl">0</span></div>
+    </div>
+
+    <div id="boardWrap">
+      <div id="board"></div>
+      <div id="overlay" class="hidden">
+        <div id="ovTitle">GAME OVER !</div>
+        <div id="ovScore"></div>
+        <button id="ovBtn">▶ REJOUER</button>
+      </div>
+    </div>
+
+    <div id="piecesRow"></div>
+
+    <p class="msg" id="msgEl">SÉLECTIONNE UNE PIÈCE ET PLACE-LA !</p>
+    <div class="controls">
+      <button class="btn btn-reset" id="resetBtn">↺ RESET</button>
+    </div>
+    <p class="tips">
+      CLIQUE SUR UNE PIÈCE · PUIS CLIQUE SUR LA GRILLE POUR LA POSER<br>
+      COMPLÈTE UNE LIGNE OU COLONNE ENTIÈRE POUR LA FAIRE EXPLOSER !
+    </p>
+  </div>
+
+  <div class="divider"></div>
+  <div class="bottom-sections" id="bottomSections"></div>
+
+  <script src="../scripts/sound.js"></script>
+  <script src="../scripts/shared.js"></script>
+  
+  <script src="../scripts/blocblast.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PixelWave — Signaler un Bug</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
+  
+  <link rel="stylesheet" href="../styles/bugs.css"/>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">PIXEL<span style="-webkit-text-fill-color:#ff3cac">WAVE</span></div>
+    <div class="top-right">
+      <a href="../index.html" class="back-btn">← RETOUR</a>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <h1>🐛 SIGNALER UN BUG</h1>
+    <p class="intro">Tu as trouvé un problème ? Dis-nous tout ! Chaque rapport nous aide à améliorer PixelWave.</p>
+
+    <!-- ── FORMULAIRE ── -->
+    <div class="card" id="formCard">
+      <div class="sec">
+        <label class="lbl">🎮 JEU CONCERNÉ</label>
+        <select id="bugGame">
+          <option value="">-- Choisir --</option>
+          <option>Snake</option><option>Pac-Man</option><option>Tetris</option>
+          <option>Breakout</option><option>Drapeaux Europe</option><option>Drapeaux Afrique</option>
+          <option>Memory Cards</option><option>Flappy Bird</option><option>Quiz Capitales</option>
+          <option>Geometry Dash</option><option>Dino Runner</option><option>2048</option>
+          <option>Page d'accueil</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="sec">
+        <label class="lbl">⚡ SÉVÉRITÉ</label>
+        <div class="sev-row">
+          <button class="sev-btn s1" data-s="1">🟡 MINEUR</button>
+          <button class="sev-btn s2" data-s="2">🟠 MODÉRÉ</button>
+          <button class="sev-btn s3" data-s="3">🔴 MAJEUR</button>
+          <button class="sev-btn s4" data-s="4">💀 CRITIQUE</button>
+        </div>
+      </div>
+      <div class="sec">
+        <label class="lbl">📝 DESCRIPTION</label>
+        <textarea id="bugDesc" placeholder="Décris ce qui s'est passé et comment reproduire le bug…"></textarea>
+      </div>
+      <div class="sec">
+        <label class="lbl">📱 APPAREIL (OPTIONNEL)</label>
+        <input type="text" id="bugDevice" placeholder="Ex: iPhone 14, Chrome sur Windows…"/>
+      </div>
+      <div class="sec">
+        <label class="lbl">👤 PSEUDO (OPTIONNEL)</label>
+        <input type="text" id="bugAuthor" placeholder="Pour te recontacter si besoin"/>
+      </div>
+      <div class="sec">
+        <button class="submit-btn" id="submitBug">🐛 ENVOYER LE RAPPORT</button>
+      </div>
+    </div>
+
+    <!-- ── SUCCESS ── -->
+    <div class="success-card" id="successCard">
+      <div class="success-icon">✅</div>
+      <div class="success-title">RAPPORT ENVOYÉ !</div>
+      <div class="success-sub">Merci ! On va regarder ça très vite 😄</div>
+      <button class="submit-btn" id="anotherBug" style="width:auto;padding:.6rem 1.5rem">SIGNALER UN AUTRE BUG</button>
+    </div>
+
+    <!-- ── RAPPORTS ENVOYÉS PAR LA COMMUNAUTÉ ── -->
+    <div class="card" id="communityCard">
+      <div class="card-header">
+        <span>📨 RAPPORTS DE LA COMMUNAUTÉ</span>
+        <span class="reports-count" id="reportsCount">0 rapport(s)</span>
+      </div>
+      <div id="communityList">
+        <div class="empty-state">CHARGEMENT…</div>
+      </div>
+      <div style="padding:.5rem 1rem 1rem" id="loadMoreWrap" style="display:none">
+        <button class="load-more-btn" id="loadMoreBtn">CHARGER PLUS ↓</button>
+      </div>
+    </div>
+
+    <!-- ── BUGS CONNUS (statuts fixes) ── -->
+    <div class="card">
+      <div class="card-header">📋 BUGS CONNUS &amp; STATUTS</div>
+      <div class="known-section">
+        <div class="bug-item"><span class="bug-sev-icon">🟡</span><div><div class="bug-game-tag">TOUS LES JEUX</div><div class="bug-desc-text">Leaderboard lent au premier chargement (Firebase cold start)</div><span class="status-badge s-prog">EN COURS</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">PAC-MAN</div><div class="bug-desc-text">Fantômes traversaient certains murs</div><span class="status-badge s-fixed">CORRIGÉ v3</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">FLAPPY BIRD</div><div class="bug-desc-text">Zoom accidentel au double-tap sur iPad/mobile</div><span class="status-badge s-fixed">CORRIGÉ v4</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">FLAPPY BIRD</div><div class="bug-desc-text">Jeu ne se réinitialisait pas après game over</div><span class="status-badge s-fixed">CORRIGÉ v3</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">LEADERBOARD</div><div class="bug-desc-text">Scores enregistrés en double (doublon Anonyme)</div><span class="status-badge s-fixed">CORRIGÉ v3</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">GEOMETRY DASH + DINO</div><div class="bug-desc-text">Vitesse trop élevée, obstacles trop difficiles</div><span class="status-badge s-fixed">CORRIGÉ v4</span></div></div>
+        <div class="bug-item"><span class="bug-sev-icon">✅</span><div><div class="bug-game-tag">PLEIN ÉCRAN</div><div class="bug-desc-text">Swipe pour bouger sortait du mode plein écran</div><span class="status-badge s-fixed">CORRIGÉ v4</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <script type="module" src="../scripts/bugs.js"></script>
+</body>
+</html>
